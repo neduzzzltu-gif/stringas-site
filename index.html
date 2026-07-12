@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Stringas – Stygų menas su širdimi</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{color-scheme:light;
+  --cream:#fdf6ec;--warm1:#f5e6cc;--warm2:#e8c99a;
+  --brown:#8b5e3c;--dark:#3d2b1f;--accent:#c0602a;
+  --text:#4a3728;--light:#7a6050;--shadow:rgba(61,43,31,.15);
+  --r:16px;--tr:.4s cubic-bezier(.25,.8,.25,1)
+}
+html{scroll-behavior:smooth}
+body{font-family:'Georgia',serif;background:var(--cream);color:var(--text);line-height:1.7;overflow-x:hidden}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:var(--warm1)}::-webkit-scrollbar-thumb{background:var(--warm2);border-radius:4px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 60px;background:rgba(253,246,236,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(139,94,60,.12);transition:box-shadow var(--tr)}
+nav.scrolled{box-shadow:0 4px 24px var(--shadow)}
+.nav-logo{font-size:1.6rem;font-weight:700;letter-spacing:2px;color:var(--accent);text-decoration:none}
+.nav-logo span{color:var(--brown)}
+.nav-links{display:flex;gap:32px;list-style:none}
+.nav-links a{text-decoration:none;color:var(--text);font-size:.93rem;position:relative;transition:color var(--tr)}
+.nav-links a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:2px;background:var(--accent);border-radius:2px;transition:width var(--tr)}
+.nav-links a:hover{color:var(--accent)}.nav-links a:hover::after{width:100%}
+.nav-cta{background:var(--accent);color:#fff!important;padding:9px 24px;border-radius:50px;box-shadow:0 4px 14px rgba(192,96,42,.3);transition:background var(--tr),transform var(--tr)!important}
+.nav-cta::after{display:none!important}.nav-cta:hover{background:var(--brown)!important;transform:translateY(-2px)!important}
+.nav-right{display:flex;align-items:center;gap:20px}
+.lang-toggle{display:flex;align-items:center;gap:4px;font-family:'Arial',sans-serif;font-size:.82rem}
+.lang-btn{background:none;border:none;cursor:pointer;color:var(--light);font-size:.82rem;font-weight:700;padding:4px 8px;border-radius:6px;transition:color var(--tr),background var(--tr)}
+.lang-btn.active{color:var(--accent);background:rgba(192,96,42,.1)}
+.lang-sep{color:var(--warm2)}
+
+/* UTILITY */
+.section-label{font-size:.78rem;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-family:'Arial',sans-serif;font-weight:600}
+h2.section-title{font-size:clamp(1.8rem,4vw,2.8rem);color:var(--dark);line-height:1.25;margin-bottom:14px}
+.section-desc{color:var(--light);font-size:1.02rem;max-width:540px}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+.btn-primary{background:var(--accent);color:#fff;padding:15px 34px;border-radius:50px;text-decoration:none;font-size:1rem;font-family:'Arial',sans-serif;font-weight:600;box-shadow:0 6px 20px rgba(192,96,42,.35);transition:background var(--tr),transform var(--tr),box-shadow var(--tr);display:inline-block}
+.btn-primary:hover{background:var(--brown);transform:translateY(-3px);box-shadow:0 12px 28px rgba(192,96,42,.45)}
+.btn-secondary{background:transparent;color:var(--brown);padding:15px 34px;border-radius:50px;text-decoration:none;font-size:1rem;font-family:'Arial',sans-serif;font-weight:600;border:2px solid var(--warm2);transition:border-color var(--tr),color var(--tr),transform var(--tr),background var(--tr)}
+.btn-secondary:hover{border-color:var(--brown);color:var(--dark);background:var(--warm1);transform:translateY(-3px)}
+
+/* HERO */
+#hero{min-height:100vh;display:flex;align-items:center;padding:120px 60px 80px;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--cream) 0%,var(--warm1) 60%,var(--warm2) 100%)}
+#hero::before{content:'';position:absolute;top:-120px;right:-120px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(192,96,42,.12) 0%,transparent 70%);animation:pulse 6s ease-in-out infinite}
+#hero::after{content:'';position:absolute;bottom:-80px;left:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(139,94,60,.1) 0%,transparent 70%);animation:pulse 8s ease-in-out infinite reverse}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+.hero-content{position:relative;z-index:1;max-width:620px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(192,96,42,.1);border:1px solid rgba(192,96,42,.25);color:var(--accent);padding:8px 18px;border-radius:50px;font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;font-family:'Arial',sans-serif;margin-bottom:26px;animation:fadeDown .8s ease both}
+.hero-badge::before{content:'✦';font-size:.68rem}
+h1{font-size:clamp(2.4rem,6vw,4.2rem);line-height:1.15;color:var(--dark);margin-bottom:22px;animation:fadeUp .9s ease .15s both}
+h1 em{font-style:normal;color:var(--accent);position:relative}
+h1 em::after{content:'';position:absolute;left:0;bottom:4px;width:100%;height:6px;background:rgba(192,96,42,.2);border-radius:3px;z-index:-1}
+.hero-desc{font-size:1.1rem;color:var(--light);margin-bottom:38px;max-width:480px;animation:fadeUp .9s ease .28s both}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;animation:fadeUp .9s ease .4s both}
+.hero-visual{position:absolute;right:60px;top:50%;width:clamp(320px,38vw,480px);height:clamp(320px,38vw,480px);border-radius:50%;overflow:hidden;box-shadow:0 24px 64px rgba(61,43,31,.22),0 0 0 3px rgba(139,94,60,.18);animation:floatIn 1s ease .3s both,float 5s ease-in-out 1.3s infinite}
+.string-art-svg{width:100%;height:100%;opacity:.9}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatIn{from{opacity:0;transform:translateY(-40%) scale(.9)}to{opacity:1;transform:translateY(-50%) scale(1)}}
+@keyframes float{0%,100%{transform:translateY(-50%)}50%{transform:translateY(calc(-50% - 12px))}}
+@keyframes draw-line{from{stroke-dashoffset:450;opacity:0}6%{opacity:.6}to{stroke-dashoffset:0;opacity:.6}}
+@keyframes draw-cross{from{stroke-dashoffset:450;opacity:0}6%{opacity:.28}to{stroke-dashoffset:0;opacity:.28}}
+@keyframes draw-ring{from{stroke-dashoffset:1300;opacity:0}6%{opacity:.22}to{stroke-dashoffset:0;opacity:.22}}
+@keyframes nail-pop{from{opacity:0;transform:scale(0)}70%{opacity:1;transform:scale(1.3)}to{opacity:1;transform:scale(1)}}
+@keyframes hbg-in{from{opacity:0}to{opacity:.72}}
+.hs{stroke-dasharray:450;stroke-dashoffset:450;animation:draw-line .65s ease-out both}
+.hsc{stroke-dasharray:450;stroke-dashoffset:450;animation:draw-cross .75s ease-out both}
+.hring{stroke-dashoffset:1300;animation:draw-ring 1.4s ease-out both}
+.hn{opacity:0;transform-box:fill-box;transform-origin:center;animation:nail-pop .22s cubic-bezier(.34,1.56,.64,1) both}
+
+/* STATS */
+#stats{background:var(--dark);padding:60px;display:flex;justify-content:center;gap:80px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-number{font-size:2.8rem;font-weight:700;color:var(--warm2);display:block;line-height:1}
+.stat-label{font-family:'Arial',sans-serif;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:6px;display:block}
+
+/* PRODUCTS */
+#products{padding:100px 60px;background:var(--cream)}
+.products-header{text-align:center;margin-bottom:60px}
+.products-header .section-desc{margin:0 auto}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;max-width:1100px;margin:0 auto}
+.product-card{background:#fff;border-radius:var(--r);overflow:hidden;box-shadow:0 4px 20px var(--shadow);transition:transform var(--tr),box-shadow var(--tr);cursor:pointer}
+.product-card:hover{transform:translateY(-8px);box-shadow:0 16px 40px rgba(61,43,31,.2)}
+.product-card:hover .card-img-inner{transform:scale(1.06)}
+.card-img-wrap{width:100%;aspect-ratio:1;overflow:hidden;background:var(--warm1)}
+.card-img-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transition:transform var(--tr)}
+.card-body{padding:26px}
+.card-tag{font-family:'Arial',sans-serif;font-size:.73rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
+.card-title{font-size:1.22rem;color:var(--dark);margin-bottom:8px}
+.card-desc{font-size:.9rem;color:var(--light);margin-bottom:18px;line-height:1.6}
+.card-footer{display:flex;align-items:center;justify-content:space-between}
+.price{font-size:1rem;font-weight:700;color:var(--accent);font-family:'Arial',sans-serif}
+.price span{font-size:.72rem;font-weight:400;color:var(--light);display:block}
+.btn-card{background:var(--warm1);color:var(--brown);border:none;padding:9px 20px;border-radius:50px;font-family:'Arial',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:background var(--tr),color var(--tr),transform var(--tr)}
+.btn-card:hover{background:var(--accent);color:#fff;transform:scale(1.05)}
+
+/* ABOUT */
+#about{padding:100px 60px;background:linear-gradient(160deg,var(--warm1) 0%,var(--cream) 100%)}
+.about-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.about-visual{position:relative}
+.about-img-frame{width:100%;aspect-ratio:3/4;max-width:420px;background:var(--warm2);border-radius:24px 24px 80px 24px;overflow:hidden;box-shadow:12px 20px 48px var(--shadow);display:flex;align-items:center;justify-content:center}
+.about-accent-box{position:absolute;bottom:-24px;right:-24px;width:160px;height:160px;background:var(--accent);border-radius:24px;z-index:-1;opacity:.35}
+.about-pill{position:absolute;top:32px;right:-20px;background:#fff;border-radius:50px;padding:12px 20px;box-shadow:0 8px 24px var(--shadow);display:flex;align-items:center;gap:10px;font-family:'Arial',sans-serif;font-size:.83rem;font-weight:600;color:var(--dark);white-space:nowrap}
+.about-pill-dot{width:10px;height:10px;border-radius:50%;background:#5cb85c;box-shadow:0 0 0 3px rgba(92,184,92,.25);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.about-list{list-style:none;margin:24px 0 32px;display:flex;flex-direction:column;gap:12px}
+.about-list li{display:flex;align-items:flex-start;gap:12px;font-size:.96rem}
+.about-list li::before{content:'✦';color:var(--accent);font-size:.72rem;margin-top:5px;flex-shrink:0}
+
+/* TUTORIAL */
+#tutorial{padding:100px 60px;background:var(--warm1)}
+.tut-header{text-align:center;margin-bottom:64px}
+.tut-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:1100px;margin:0 auto}
+.tut-card{background:var(--cream);border-radius:20px;padding:36px 40px;box-shadow:0 6px 32px var(--shadow)}
+.tut-card-title{font-size:1.15rem;font-weight:700;color:var(--dark);margin-bottom:20px;display:flex;align-items:center;gap:10px;font-family:'Arial',sans-serif}
+.tut-card-dot{width:9px;height:9px;min-width:9px;border-radius:50%;background:var(--accent);display:inline-block}
+/* accordion items */
+.tut-tip{border-bottom:1px solid var(--warm2);overflow:hidden}
+.tut-tip:last-child{border-bottom:none}
+.tut-tip-btn{width:100%;display:flex;align-items:center;gap:14px;padding:14px 0;background:none;border:none;cursor:pointer;text-align:left}
+.tut-tip-btn:hover .tut-tip-title{color:var(--accent)}
+.tut-num{width:26px;height:26px;min-width:26px;border-radius:50%;background:var(--accent);color:#fff;font-family:'Arial',sans-serif;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--tr)}
+.tut-tip.open .tut-num{background:var(--brown)}
+.tut-tip-title{font-family:'Arial',sans-serif;font-size:.9rem;font-weight:700;color:var(--dark);flex:1;transition:color var(--tr)}
+.tut-tip-chevron{width:18px;height:18px;flex-shrink:0;transition:transform .3s ease}
+.tut-tip-chevron path{stroke:var(--brown);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tut-tip.open .tut-tip-chevron{transform:rotate(180deg)}
+.tut-tip-body{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease}
+.tut-tip.open .tut-tip-body{max-height:300px}
+.tut-tip-list{list-style:none;padding:0 0 14px 40px}
+.tut-tip-list li{font-size:.85rem;color:var(--light);line-height:1.65;padding-left:14px;position:relative;margin-bottom:3px}
+.tut-tip-list li::before{content:'—';position:absolute;left:0;color:var(--warm2)}
+@media(max-width:768px){
+  #tutorial{padding:70px 24px}
+  .tut-grid{grid-template-columns:1fr}
+  .tut-card{padding:28px 24px}
+}
+
+/* REVIEWS */
+#reviews{padding:100px 60px;background:var(--dark)}
+#reviews .section-label{color:var(--warm2)}
+#reviews h2.section-title{color:#fff}
+#reviews .section-desc{color:rgba(255,255,255,.55)}
+.reviews-header{text-align:center;margin-bottom:60px}
+.reviews-track-wrap{overflow:hidden;mask-image:linear-gradient(to right,transparent 0%,black 12%,black 88%,transparent 100%)}
+.reviews-track{display:flex;gap:22px;animation:slide 30s linear infinite;width:max-content}
+.reviews-track:hover{animation-play-state:paused}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.review-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:30px;width:310px;flex-shrink:0;backdrop-filter:blur(6px);transition:background var(--tr),border-color var(--tr)}
+.review-card:hover{background:rgba(255,255,255,.12);border-color:rgba(232,201,154,.3)}
+.review-photo{width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;margin-bottom:18px}
+.review-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.review-photo:has(img[src=""]),.review-photo:has(img:not([src])){display:none}
+.review-stars{color:#f5c842;font-size:.95rem;letter-spacing:3px;margin-bottom:14px}
+.review-text{color:rgba(255,255,255,.82);font-size:.95rem;line-height:1.7;margin-bottom:22px;font-style:italic}
+.reviewer{display:flex;align-items:center;gap:12px}
+.reviewer-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Arial',sans-serif;font-size:.95rem;font-weight:700;color:#fff;flex-shrink:0}
+.reviewer-name{color:#fff;font-weight:600;font-family:'Arial',sans-serif;font-size:.9rem}
+.reviewer-tag{color:var(--warm2);font-family:'Arial',sans-serif;font-size:.76rem}
+
+/* ORDER WIZARD */
+#order{padding:100px 60px;background:var(--cream)}
+.order-header{text-align:center;margin-bottom:52px}
+.order-header .section-desc{margin:0 auto}
+.wizard-layout{display:grid;grid-template-columns:1fr 400px;gap:40px;max-width:1120px;margin:0 auto;align-items:start}
+
+/* Steps bar */
+.steps-bar{display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:32px;border:1px solid rgba(139,94,60,.15);border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 12px var(--shadow)}
+.step-tab{padding:14px 10px;text-align:center;border-right:1px solid rgba(139,94,60,.1);transition:background var(--tr);cursor:default}
+.step-tab:last-child{border-right:none}
+.step-tab.done{cursor:pointer}
+.step-tab.done:hover{background:var(--warm1)}
+.step-tab.active{background:var(--dark)}
+.step-tab.done{background:rgba(192,96,42,.07)}
+.step-num{font-family:'Arial',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:1px;color:var(--light);margin-bottom:3px}
+.step-tab.active .step-num{color:var(--warm2)}
+.step-tab.done .step-num{color:var(--accent)}
+.step-name-label{font-family:'Arial',sans-serif;font-size:.78rem;font-weight:600;color:var(--light)}
+.step-tab.active .step-name-label{color:#fff}
+.step-tab.done .step-name-label{color:var(--brown)}
+
+/* Wizard form box */
+.wizard-form-box{background:#fff;border-radius:20px;padding:38px;box-shadow:0 8px 40px var(--shadow);min-height:460px;display:flex;flex-direction:column}
+.step-panel{display:none;flex:1;flex-direction:column}
+.step-panel.active{display:flex;animation:fadeUp .4s ease both}
+.step-panel h3{font-size:1.35rem;color:var(--dark);margin-bottom:6px}
+.step-panel>.step-sub{color:var(--light);font-size:.92rem;margin-bottom:24px}
+
+/* Drop zone */
+.drop-zone{border:2.5px dashed var(--warm2);border-radius:14px;padding:40px 28px;text-align:center;cursor:pointer;position:relative;transition:border-color var(--tr),background var(--tr);background:var(--cream)}
+.drop-zone.drag-over{border-color:var(--accent);background:rgba(192,96,42,.06)}
+.drop-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:2.2rem;display:block;margin-bottom:10px;line-height:1}
+.drop-title{font-size:.97rem;color:var(--dark);margin-bottom:4px;font-weight:600}
+.drop-sub{font-family:'Arial',sans-serif;font-size:.8rem;color:var(--light)}
+.thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;margin-top:14px}
+.p-thumb{aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--warm1);position:relative;animation:popIn .3s ease both}
+@keyframes popIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.p-thumb img{width:100%;height:100%;object-fit:cover}
+.p-thumb .rm{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s}
+.p-thumb:hover .rm{opacity:1}
+.skip-link{background:none;border:none;color:var(--light);font-family:'Arial',sans-serif;font-size:.85rem;cursor:pointer;margin-top:14px;text-decoration:underline;transition:color var(--tr);align-self:flex-start}
+.skip-link:hover{color:var(--accent)}
+
+/* Size grid */
+.selector-section{margin-bottom:24px}
+.selector-label{font-family:'Arial',sans-serif;font-size:.76rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--brown);margin-bottom:12px}
+.size-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.size-card{display:block;border:2px solid var(--warm1);border-radius:12px;padding:14px 16px;cursor:pointer;position:relative;transition:border-color var(--tr),background var(--tr)}
+.size-card input[type="radio"]{position:absolute;top:13px;right:13px;accent-color:var(--accent);width:17px;height:17px;cursor:pointer}
+.size-card:has(input:checked){border-color:var(--accent);background:rgba(192,96,42,.05)}
+.size-card.popular{border-top:3px solid var(--accent)}
+.popular-badge{position:absolute;top:-1px;left:10px;background:var(--accent);color:#fff;font-size:.6rem;padding:2px 8px;border-radius:0 0 6px 6px;font-family:'Arial',sans-serif;font-weight:700;letter-spacing:.5px}
+.size-main{font-weight:700;font-size:1.05rem;color:var(--dark);display:block;margin-bottom:1px}
+.size-desc-text{font-family:'Arial',sans-serif;font-size:.78rem;color:var(--light);display:block;margin-bottom:7px}
+.size-price{font-family:'Arial',sans-serif;font-size:.72rem;font-weight:700;color:var(--accent);letter-spacing:.5px;text-transform:uppercase}
+
+/* Color palette */
+.color-palette{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.cp-opt{cursor:pointer}
+.cp-opt input[type="radio"]{display:none}
+.cp-swatch{width:32px;height:32px;border-radius:50%;display:block;border:2.5px solid transparent;transition:transform .18s,box-shadow .18s;box-shadow:0 1px 5px rgba(0,0,0,.2)}
+.cp-opt input:checked + .cp-swatch{transform:scale(1.18);box-shadow:0 0 0 3px #fff,0 0 0 5.5px var(--accent)}
+.cp-opt:hover .cp-swatch{transform:scale(1.1)}
+.cp-custom-swatch{font-size:1rem;line-height:32px;text-align:center;background:var(--warm1);border:2px dashed var(--brown)!important;color:var(--brown)}
+.custom-color-box{display:none;flex-direction:column;gap:8px;margin-top:14px;animation:fadeDown .3s ease both}
+.custom-color-box.visible{display:flex}
+.custom-color-label{font-family:'Arial',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--light)}
+.custom-color-input{border:2px solid var(--warm2);border-radius:10px;padding:10px 14px;font-family:'Georgia',serif;font-size:.95rem;color:var(--text);background:var(--cream);outline:none;transition:border-color var(--tr)}
+.custom-color-input:focus{border-color:var(--accent)}
+.sw-si{background:linear-gradient(135deg,#e0e0e0,#909090)}
+.sw-go{background:linear-gradient(135deg,#f0d060,#b08010)}
+.sw-co{background:linear-gradient(135deg,#d09060,#7b3810)}
+.sw-bl{background:#1a1a1a}
+
+/* Step 3 form */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.form-group{display:flex;flex-direction:column;gap:7px}
+.form-group.full{grid-column:1/-1}
+.field-label{font-family:'Arial',sans-serif;font-size:.77rem;font-weight:600;letter-spacing:.5px;color:var(--brown);text-transform:uppercase}
+input[type="text"],input[type="email"],textarea{border:2px solid var(--warm1);border-radius:11px;padding:13px 16px;font-family:'Georgia',serif;font-size:.96rem;color:var(--text);background:var(--cream);outline:none;transition:border-color var(--tr),box-shadow var(--tr);resize:vertical;width:100%}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(192,96,42,.1)}
+textarea{min-height:100px}
+
+/* Step 4 confirm */
+.confirm-table{width:100%;border-collapse:collapse;margin-bottom:24px}
+.confirm-table tr{border-bottom:1px solid var(--warm1)}
+.confirm-table td{padding:13px 0;font-size:.92rem}
+.confirm-table td:first-child{color:var(--light);font-family:'Arial',sans-serif;font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;width:38%}
+.confirm-table td:last-child{color:var(--dark);font-weight:600}
+.photo-thumb-sm{width:36px;height:36px;border-radius:50%;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.photo-thumb-sm img{width:100%;height:100%;object-fit:cover}
+
+/* Wizard nav */
+.wiz-spacer{flex:1}
+.wizard-nav{display:flex;align-items:center;margin-top:24px;gap:12px}
+.btn-wp{background:var(--warm1);color:var(--brown);border:none;padding:13px 26px;border-radius:50px;font-family:'Arial',sans-serif;font-size:.92rem;font-weight:600;cursor:pointer;transition:background var(--tr),transform var(--tr)}
+.btn-wp:hover{background:var(--warm2);transform:translateY(-2px)}
+.btn-wn,.btn-ws{background:var(--accent);color:#fff;border:none;padding:13px 30px;border-radius:50px;font-family:'Arial',sans-serif;font-size:.92rem;font-weight:700;cursor:pointer;box-shadow:0 5px 18px rgba(192,96,42,.3);transition:background var(--tr),transform var(--tr),box-shadow var(--tr);margin-left:auto}
+.btn-wn:hover,.btn-ws:hover{background:var(--brown);transform:translateY(-2px);box-shadow:0 10px 24px rgba(192,96,42,.4)}
+.wiz-note{font-family:'Arial',sans-serif;font-size:.78rem;color:var(--light);text-align:center;margin-top:10px}
+
+/* Right: Preview panel */
+.wizard-right{position:sticky;top:96px}
+.preview-panel{background:#fff;border-radius:20px;padding:28px;box-shadow:0 8px 40px var(--shadow);text-align:center}
+.preview-label{font-family:'Arial',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:18px;font-weight:600;display:block}
+.canvas-wrap{width:100%;aspect-ratio:1}
+.canvas-wrap svg{width:100%;height:100%}
+.preview-meta{margin-top:18px;text-align:left}
+.pm-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--warm1);font-family:'Arial',sans-serif;font-size:.82rem}
+.pm-row:last-child{border-bottom:none}
+.pm-key{color:var(--light)}
+.pm-val{color:var(--dark);font-weight:600;display:flex;align-items:center;gap:6px}
+.pm-swatch{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.1)}
+
+/* Crop UI */
+.crop-box{position:relative;width:100%;aspect-ratio:1;overflow:hidden;background:#1a0800;cursor:grab}
+.crop-box.dragging{cursor:grabbing}
+.crop-photo{position:absolute;width:160%;height:160%;top:-30%;left:-30%;object-fit:cover;pointer-events:none;will-change:transform;user-select:none;-webkit-user-drag:none}
+.crop-svg-ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.crop-hint{font-family:'Arial',sans-serif;font-size:.76rem;color:var(--light);text-align:center;margin-top:9px;letter-spacing:.2px}
+.gen-params{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.gen-param-row{display:flex;flex-direction:column;gap:6px}
+.gen-param-label{font-family:'Arial',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--light)}
+.gen-param-opts{display:flex;gap:6px;flex-wrap:wrap}
+.gen-opt{cursor:pointer}
+.gen-opt input{display:none}
+.gen-opt span{display:inline-block;padding:5px 12px;border-radius:8px;font-family:'Arial',sans-serif;font-size:.78rem;font-weight:600;border:1.5px solid var(--warm2);color:var(--brown);background:transparent;transition:background var(--tr),border-color var(--tr),color var(--tr)}
+.gen-opt input:checked + span{background:var(--accent);border-color:var(--accent);color:#fff}
+.gen-opt:hover span{border-color:var(--accent);color:var(--accent)}
+.gen-slider-wrap{display:flex;flex-direction:column;gap:5px;padding:2px 0}
+#genThreads{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;background:linear-gradient(to right,var(--accent) var(--pct,50%),var(--warm2) var(--pct,50%));outline:none;cursor:pointer;--pct:50%}
+#genThreads::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer;transition:transform .1s}
+#genThreads::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer}
+#genThreads::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.gen-slider-ticks{display:flex;justify-content:space-between;padding:0 1px}
+.gen-slider-ticks span{font-family:'Arial',sans-serif;font-size:.68rem;color:var(--light);opacity:.7}
+.btn-gen{display:block;width:100%;margin-top:12px;padding:12px 0;background:var(--accent);color:#fff;border:none;border-radius:12px;font-family:'Arial',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.8px;cursor:pointer;transition:background var(--tr),opacity var(--tr)}
+.btn-gen:hover:not(:disabled){background:var(--brown)}
+.btn-gen:disabled{opacity:.55;cursor:wait}
+.btn-gen-back{background:transparent;color:var(--brown);border:2px solid var(--warm2);margin-top:8px}
+.btn-gen-back:hover{background:var(--warm1);color:var(--dark)}
+.str-result-wrap{display:flex;flex-direction:column;align-items:center;width:100%}
+.str-canvas-clip{width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;box-shadow:0 4px 24px rgba(139,94,60,.3)}
+.str-canvas-clip canvas{width:100%;height:100%;display:block}
+
+/* FOOTER */
+footer{background:var(--dark);color:rgba(255,255,255,.55);text-align:center;padding:50px 60px;font-family:'Arial',sans-serif;font-size:.86rem}
+.footer-logo{font-family:'Georgia',serif;font-size:1.55rem;color:var(--warm2);letter-spacing:3px;display:block;margin-bottom:14px}
+footer p{margin-bottom:5px}
+footer a{color:var(--warm2);text-decoration:none;transition:color .2s}
+footer a:hover{color:#fff}
+.footer-links{display:flex;justify-content:center;gap:30px;list-style:none;margin:18px 0}
+
+/* TOAST */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--dark);color:#fff;padding:15px 30px;border-radius:50px;font-family:'Arial',sans-serif;font-size:.92rem;box-shadow:0 8px 32px rgba(0,0,0,.3);z-index:999;transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .5s;opacity:0;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* RESPONSIVE */
+@media(max-width:1050px){
+  .wizard-layout{grid-template-columns:1fr}
+  .wizard-right{position:static}
+  .canvas-wrap{max-width:300px;margin:0 auto}
+}
+@media(max-width:900px){
+  nav{padding:14px 24px}
+  .nav-links{gap:16px}
+  #hero{padding:110px 24px 70px}
+  .hero-visual{display:none}
+  #stats,#products,#about,#reviews,#order{padding:72px 24px}
+  .about-inner{grid-template-columns:1fr;gap:44px}
+  footer{padding:36px 24px}
+}
+@media(max-width:620px){
+  .nav-links{display:none}
+  h1{font-size:2rem}
+  .hero-btns{flex-direction:column}
+  .size-grid{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+  .wizard-form-box{padding:24px 18px}
+  .steps-bar{grid-template-columns:repeat(4,1fr)}
+  .step-name-label{font-size:.65rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">STRING<span>AS</span></a>
+  <ul class="nav-links">
+    <li><a href="#about" data-i18n="nav_about">Apie mus</a></li>
+    <li><a href="#reviews" data-i18n="nav_reviews">Atsiliepimai</a></li>
+    <li><a href="#order" class="nav-cta" data-i18n="nav_cta">Užsakyti</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('lt')">LT</button>
+      <span class="lang-sep">|</span>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge" data-i18n="hero_badge">Pagaminta su meile</div>
+    <h1><span data-i18n="hero_h1">Kur siūlas tampa</span> <em data-i18n="hero_h1_em">menu</em></h1>
+    <p class="hero-desc" data-i18n="hero_desc">Individualūs stygų meno kūriniai, sukurti su meile ir atsidavimu — portretai, peizažai, logotipai ir dar daugiau. Kiekvienas kūrinys pasakoja jūsų istoriją.</p>
+    <div class="hero-btns">
+      <a href="#order" class="btn-primary" data-i18n="hero_btn1">Pradėti užsakymą</a>
+      <a href="#reviews" class="btn-secondary" data-i18n="hero_btn2">Atsiliepimai</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <svg viewBox="45 45 330 330" class="string-art-svg" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="hg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#f5e6cc"/>
+        </radialGradient>
+      </defs>
+
+      <!-- Canvas background -->
+      <circle cx="210" cy="210" r="200" fill="url(#hg)" style="opacity:0;animation:hbg-in .6s ease .2s both"/>
+
+      <!-- Decorative rings draw in -->
+      <circle cx="210" cy="210" r="160" fill="none" stroke="#c0602a" stroke-width="1.1"
+        class="hring" style="animation-delay:.55s;stroke-dasharray:1300"/>
+      <circle cx="210" cy="210" r="108" fill="none" stroke="#8b5e3c" stroke-width=".9"
+        class="hring" style="animation-delay:.75s;stroke-dasharray:700;animation-duration:1s"/>
+
+      <!-- Nails appear first (all 16 pop in quick succession) -->
+      <circle class="hn" cx="210" cy="20"  r="7"   fill="#7a4a28" style="animation-delay:.38s"/>
+      <circle class="hn" cx="305" cy="32"  r="5.5" fill="#7a4a28" style="animation-delay:.42s"/>
+      <circle class="hn" cx="380" cy="80"  r="7"   fill="#7a4a28" style="animation-delay:.46s"/>
+      <circle class="hn" cx="395" cy="140" r="5.5" fill="#7a4a28" style="animation-delay:.50s"/>
+      <circle class="hn" cx="400" cy="210" r="7"   fill="#7a4a28" style="animation-delay:.54s"/>
+      <circle class="hn" cx="395" cy="280" r="5.5" fill="#7a4a28" style="animation-delay:.58s"/>
+      <circle class="hn" cx="380" cy="340" r="7"   fill="#7a4a28" style="animation-delay:.62s"/>
+      <circle class="hn" cx="305" cy="390" r="5.5" fill="#7a4a28" style="animation-delay:.66s"/>
+      <circle class="hn" cx="210" cy="400" r="7"   fill="#7a4a28" style="animation-delay:.70s"/>
+      <circle class="hn" cx="115" cy="390" r="5.5" fill="#7a4a28" style="animation-delay:.74s"/>
+      <circle class="hn" cx="40"  cy="340" r="7"   fill="#7a4a28" style="animation-delay:.78s"/>
+      <circle class="hn" cx="25"  cy="280" r="5.5" fill="#7a4a28" style="animation-delay:.82s"/>
+      <circle class="hn" cx="20"  cy="210" r="7"   fill="#7a4a28" style="animation-delay:.86s"/>
+      <circle class="hn" cx="25"  cy="140" r="5.5" fill="#7a4a28" style="animation-delay:.90s"/>
+      <circle class="hn" cx="40"  cy="80"  r="7"   fill="#7a4a28" style="animation-delay:.94s"/>
+      <circle class="hn" cx="115" cy="32"  r="5.5" fill="#7a4a28" style="animation-delay:.98s"/>
+
+      <!-- Cross strings layer 1: opposite pairs (skip≈8) -->
+      <line class="hsc" x1="210" y1="20"  x2="380" y2="340" stroke="#8b5e3c" stroke-width="1"   style="animation-delay:1.1s"/>
+      <line class="hsc" x1="380" y1="80"  x2="40"  y2="340" stroke="#8b5e3c" stroke-width="1"   style="animation-delay:1.25s"/>
+      <line class="hsc" x1="400" y1="210" x2="20"  y2="210" stroke="#8b5e3c" stroke-width="1"   style="animation-delay:1.4s"/>
+      <line class="hsc" x1="305" y1="32"  x2="115" y2="390" stroke="#8b5e3c" stroke-width=".85" style="animation-delay:1.55s"/>
+      <line class="hsc" x1="395" y1="140" x2="25"  y2="280" stroke="#8b5e3c" stroke-width=".85" style="animation-delay:1.7s"/>
+      <line class="hsc" x1="25"  y1="140" x2="395" y2="280" stroke="#8b5e3c" stroke-width=".85" style="animation-delay:1.85s"/>
+
+      <!-- Cross strings layer 2: skip-5 pattern -->
+      <line class="hsc" x1="210" y1="20"  x2="395" y2="280" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.0s"/>
+      <line class="hsc" x1="305" y1="32"  x2="380" y2="340" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.12s"/>
+      <line class="hsc" x1="380" y1="80"  x2="305" y2="390" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.24s"/>
+      <line class="hsc" x1="395" y1="140" x2="210" y2="400" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.36s"/>
+      <line class="hsc" x1="400" y1="210" x2="115" y2="390" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.48s"/>
+      <line class="hsc" x1="395" y1="280" x2="40"  y2="340" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.60s"/>
+      <line class="hsc" x1="380" y1="340" x2="25"  y2="280" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.72s"/>
+      <line class="hsc" x1="305" y1="390" x2="20"  y2="210" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.84s"/>
+      <line class="hsc" x1="210" y1="400" x2="25"  y2="140" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:2.96s"/>
+      <line class="hsc" x1="115" y1="390" x2="40"  y2="80"  stroke="#8b5e3c" stroke-width=".8" style="animation-delay:3.08s"/>
+      <line class="hsc" x1="40"  y1="340" x2="115" y2="32"  stroke="#8b5e3c" stroke-width=".8" style="animation-delay:3.20s"/>
+      <line class="hsc" x1="25"  y1="280" x2="210" y2="20"  stroke="#8b5e3c" stroke-width=".8" style="animation-delay:3.32s"/>
+      <line class="hsc" x1="20"  y1="210" x2="305" y2="32"  stroke="#8b5e3c" stroke-width=".8" style="animation-delay:3.44s"/>
+      <line class="hsc" x1="25"  y1="140" x2="380" y2="80"  stroke="#8b5e3c" stroke-width=".8" style="animation-delay:3.56s"/>
+      <line class="hsc" x1="40"  y1="80"  x2="395" y2="140" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:3.68s"/>
+      <line class="hsc" x1="115" y1="32"  x2="400" y2="210" stroke="#8b5e3c" stroke-width=".8" style="animation-delay:3.80s"/>
+
+    </svg>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stat reveal"><span class="stat-number" data-target="240">0</span><span class="stat-label" data-i18n="stat_pieces">Sukurti darbai</span></div>
+  <div class="stat reveal d1"><span class="stat-number" data-target="98">0</span><span class="stat-label" data-i18n="stat_customers">Patenkinti klientai</span></div>
+  <div class="stat reveal d2"><span class="stat-number">100%</span><span class="stat-label" data-i18n="stat_made">Sukurti su širdimi</span></div>
+  <div class="stat reveal d3"><span class="stat-number" data-target="5">0</span><span class="stat-label" data-i18n="stat_years">Metai patirties</span></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-visual reveal">
+      <div class="about-img-frame">
+        <img src="about-photo.jpg" alt="Mūsų pirmas kūrinys" style="width:100%;height:100%;object-fit:cover;display:block"/>
+      </div>
+      <div class="about-accent-box"></div>
+      <div class="about-pill"><span class="about-pill-dot"></span><span data-i18n="about_pill">Priimame užsakymus</span></div>
+    </div>
+    <div class="about-text">
+      <p class="section-label reveal" data-i18n="about_label">Štai mūsų pirmas kūrinys</p>
+      <h2 class="section-title reveal d1" data-i18n="about_title">Aistra įausta į kiekvieną vinį ir siūlą</h2>
+      <p class="section-desc reveal d2" data-i18n="about_desc">Stringas gimė iš gilios meilės rankdarbiams ir stygų mezgimo menui. Tai, kas prasidėjo kaip hobis, greitai tapo pašaukimu — paverčiant prasmingas nuotraukas ir idėjas į amžinus sienų kūrinius.</p>
+      <ul class="about-list reveal d2">
+        <li data-i18n="about_l2">Naudojame aukštos kokybės apvalias drobes ir profesionalius siūlus.</li>
+        <li data-i18n="about_l3">Kiekvienas užsakymas unikalus — nėra dviejų vienodų kūrinių.</li>
+        <li data-i18n="about_l4">Glaudžiai bendradarbiaujame su jumis nuo idėjos iki rezultato.</li>
+        <li data-i18n="about_l5">Siunčiame rūpestingai supakuotą, kad kūrinys atkeliautų tobulos būklės.</li>
+      </ul>
+      <a href="#order" class="btn-primary reveal d3" data-i18n="about_cta">Užsakyti kūrinį</a>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="reviews-header reveal">
+    <p class="section-label" data-i18n="rev_label">Atsiliepimai</p>
+    <h2 class="section-title" data-i18n="rev_title">Ką sako mūsų klientai</h2>
+    <p class="section-desc" style="margin:0 auto" data-i18n="rev_desc">Tikri žodžiai iš tikrų žmonių, kurių namuose kabo Stringas kūrinys.</p>
+  </div>
+  <div class="reviews-track-wrap">
+    <div class="reviews-track">
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r1">"Išsiunčiau savo senelės nuotrauką ir gavau patį jaudriausią kūrinį, kokį tik esu mačiusi. Siūlų detalumas yra neįtikėtinas. Verkiau jį atidariusi."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#c0602a">L</div><div><div class="reviewer-name">Laura M.</div><div class="reviewer-tag" data-i18n="rt1">Portretų užsakymas</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r2">"Užsisakiau mandalą savo svetainei. Tai pirmasis dalykas, kurį pastebi kiekvienas svečias. Amatininkystė yra aukščiausio lygio."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#8b5e3c">T</div><div><div class="reviewer-name">Tomas K.</div><div class="reviewer-tag" data-i18n="rt2">Geometrinis dizainas</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r3">"Vestuvinis portretas kaip pirmojo jubiliejaus dovana. Žmona liko be žodžių. Bendravimas viso proceso metu buvo fantastiškas."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#4a3728">R</div><div><div class="reviewer-name">Rokas J.</div><div class="reviewer-tag" data-i18n="rt3">Vestuvių dovana</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r4">"Darbas atkeliavo tobulai supakuotas ir gyvenime atrodė dar geriau nei peržiūroje. Šilti tonai puikiai tiko mūsų miegamajam."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#c0602a">A</div><div><div class="reviewer-name">Agnė P.</div><div class="reviewer-tag" data-i18n="rt4">Individualus kūrinys</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r5">"Jau užsisakiau du kartus. Antrasis darbas — logotipas biurui — tapo pokalbio tema per kiekvieną kliento susitikimą."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#8b5e3c">M</div><div><div class="reviewer-name">Mindaugas V.</div><div class="reviewer-tag" data-i18n="rt5">Logotipo kūrinys</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r6">"Padovanojau mamai portretą gimtadieniui. Ji paskambino su ašaromis — gerosiomis. Tai pagavo tai, ko net aš nepastebėjau nuotraukoje."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#4a3728">E</div><div><div class="reviewer-name">Elena B.</div><div class="reviewer-tag" data-i18n="rt6">Gimtadienio dovana</div></div></div>
+      </div>
+      <!-- duplicate for seamless loop -->
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r1">"Išsiunčiau savo senelės nuotrauką ir gavau patį jaudriausią kūrinį, kokį tik esu mačiusi. Siūlų detalumas yra neįtikėtinas. Verkiau jį atidariusi."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#c0602a">L</div><div><div class="reviewer-name">Laura M.</div><div class="reviewer-tag" data-i18n="rt1">Portretų užsakymas</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r2">"Užsisakiau mandalą savo svetainei. Tai pirmasis dalykas, kurį pastebi kiekvienas svečias. Amatininkystė yra aukščiausio lygio."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#8b5e3c">T</div><div><div class="reviewer-name">Tomas K.</div><div class="reviewer-tag" data-i18n="rt2">Geometrinis dizainas</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r3">"Vestuvinis portretas kaip pirmojo jubiliejaus dovana. Žmona liko be žodžių. Bendravimas viso proceso metu buvo fantastiškas."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#4a3728">R</div><div><div class="reviewer-name">Rokas J.</div><div class="reviewer-tag" data-i18n="rt3">Vestuvių dovana</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r4">"Darbas atkeliavo tobulai supakuotas ir gyvenime atrodė dar geriau nei peržiūroje. Šilti tonai puikiai tiko mūsų miegamajam."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#c0602a">A</div><div><div class="reviewer-name">Agnė P.</div><div class="reviewer-tag" data-i18n="rt4">Individualus kūrinys</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r5">"Jau užsisakiau du kartus. Antrasis darbas — logotipas biurui — tapo pokalbio tema per kiekvieną kliento susitikimą."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#8b5e3c">M</div><div><div class="reviewer-name">Mindaugas V.</div><div class="reviewer-tag" data-i18n="rt5">Logotipo kūrinys</div></div></div>
+      </div>
+      <div class="review-card">
+        <div class="review-photo"><img src="" alt=""/></div>
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text" data-i18n="r6">"Padovanojau mamai portretą gimtadieniui. Ji paskambino su ašaromis — gerosiomis. Tai pagavo tai, ko net aš nepastebėjau nuotraukoje."</p>
+        <div class="reviewer"><div class="reviewer-avatar" style="background:#4a3728">E</div><div><div class="reviewer-name">Elena B.</div><div class="reviewer-tag" data-i18n="rt6">Gimtadienio dovana</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TUTORIAL -->
+<section id="tutorial">
+  <div class="section-label reveal" data-i18n="tut_label">PATARIMAI</div>
+  <div class="tut-header reveal">
+    <h2 class="section-title" data-i18n="tut_title">Kaip išnaudoti savo kūrinį geriausiai</h2>
+  </div>
+  <div class="tut-grid">
+    <!-- Photo tips card -->
+    <div class="tut-card reveal">
+      <div class="tut-card-title"><span class="tut-card-dot"></span><span data-i18n="tut_photo_title">Kaip pasirinkti tobulą nuotrauką</span></div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">1</div>
+          <span class="tut-tip-title" data-i18n="tut_p1_title">Kontrastas</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_p1_a">Nuotrauka turi turėti aiškų kontrastą tarp šviesių ir tamsių plotų</li>
+            <li data-i18n="tut_p1_b">Geriausia, kai veidas ar objektas išsiskiria iš fono</li>
+            <li data-i18n="tut_p1_c">Venkite per daug išblukusių ar pereksponuotų nuotraukų</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">2</div>
+          <span class="tut-tip-title" data-i18n="tut_p2_title">Vienas aiškus objektas</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_p2_a">Pasirinkite nuotrauką su vienu aiškiu veidu ar objektu</li>
+            <li data-i18n="tut_p2_b">Grupinės nuotraukos taip pat tinka, tačiau jos turi būti aiškios</li>
+            <li data-i18n="tut_p2_c">Objektas turėtų užimti bent 50–60 % kadro</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">3</div>
+          <span class="tut-tip-title" data-i18n="tut_p3_title">Ryškumas</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_p3_a">Nuotrauka turi būti kuo ryškesnė, be judėjimo ar fokuso suliejimo</li>
+            <li data-i18n="tut_p3_b">Geresnė raiška – geresnis rezultatas</li>
+            <li data-i18n="tut_p3_c">Mobilių telefonų nuotraukos puikiai tinka, jei jos ryškios</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">4</div>
+          <span class="tut-tip-title" data-i18n="tut_p4_title">Kampas ir poza</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_p4_a">Tiesioginė priekinė pozicija (en face) – ideali portretui</li>
+            <li data-i18n="tut_p4_b">3/4 kampas taip pat labai gerai tinka</li>
+            <li data-i18n="tut_p4_c">Venkite pernelyg šoninių pozų (profilio), nes jos sunkiau perteikiamos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">5</div>
+          <span class="tut-tip-title" data-i18n="tut_p5_title">Apšvietimas</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_p5_a">Natūrali šviesa – geriausia. Nuotraukos prie lango ar lauke puikiai tinka</li>
+            <li data-i18n="tut_p5_b">Venkite stiprių šešėlių ant veido ar ryškių blykstės atspindžių</li>
+            <li data-i18n="tut_p5_c">Švelnus, tolygus apšvietimas iš priekio ar šono – idealus variantas</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hanging tips card -->
+    <div class="tut-card reveal">
+      <div class="tut-card-title"><span class="tut-card-dot"></span><span data-i18n="tut_hang_title">Kur kabinti, kad geriausiai matytųsi</span></div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">1</div>
+          <span class="tut-tip-title" data-i18n="tut_h1_title">Šoninis apšvietimas</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_h1_a">Kabinkite ten, kur šviesa krenta iš šono, o ne tiesiai iš priekio</li>
+            <li data-i18n="tut_h1_b">Šoninis apšvietimas pabrėžia siūlų struktūrą ir kūriniui suteikia gylį</li>
+            <li data-i18n="tut_h1_c">Idealiai tinka reguliuojamos krypties šviestuvai (angl. spotlights)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">2</div>
+          <span class="tut-tip-title" data-i18n="tut_h2_title">Kontrastingas fonas</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_h2_a">Šviesi siena – ideali tamsiems siūlų kūriniams</li>
+            <li data-i18n="tut_h2_b">Jei kūrinys yra su šviesiomis spalvomis, rinkitės tamsesnį foną</li>
+            <li data-i18n="tut_h2_c">Venkite marių ar ryškių raštų sienų, kurios blaško dėmesį</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">3</div>
+          <span class="tut-tip-title" data-i18n="tut_h3_title">Akių lygis</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_h3_a">Kūrinio centras turėtų būti maždaug akių lygyje (apie 145–160 cm nuo grindų)</li>
+            <li data-i18n="tut_h3_b">Taip žiūrovui nereikia nei žemyn, nei aukštyn žiūrėti – kūrinys matomas natūraliai</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">4</div>
+          <span class="tut-tip-title" data-i18n="tut_h4_title">Atstumas nuo šviesos</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_h4_a">Tiesioginė saulės šviesa ilgainiui gali blukinti siūlus</li>
+            <li data-i18n="tut_h4_b">Rinkitės vietą su indirektiniu ar filtruotu natūraliu apšvietimu</li>
+            <li data-i18n="tut_h4_c">Dirbtinė šviesa (LED) yra puiki ir saugi alternatyva</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tut-tip">
+        <button class="tut-tip-btn" onclick="tutToggle(this)">
+          <div class="tut-num">5</div>
+          <span class="tut-tip-title" data-i18n="tut_h5_title">Erdvė aplink</span>
+          <svg class="tut-tip-chevron" viewBox="0 0 18 18"><path d="M3 6l6 6 6-6"/></svg>
+        </button>
+        <div class="tut-tip-body">
+          <ul class="tut-tip-list">
+            <li data-i18n="tut_h5_a">Palikite bent 15–20 cm laisvos erdvės aplink kūrinį</li>
+            <li data-i18n="tut_h5_b">Tai leidžia kūriniui „kvėpuoti" ir išsiskirti iš aplinkos</li>
+            <li data-i18n="tut_h5_c">Per daug aplinkos elementų gali „paskandinti" net pačius geriausius darbus</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER WIZARD -->
+<section id="order">
+  <div class="order-header reveal">
+    <p class="section-label" data-i18n="order_label">Pradėkite</p>
+    <h2 class="section-title" data-i18n="order_title">Sukurkite savo kūrinį</h2>
+    <p class="section-desc" data-i18n="order_desc">Įkelkite nuotrauką, pasirinkite parametrus ir mes susisieksime su kainodaros bei terminų informacija.</p>
+  </div>
+
+  <div class="wizard-layout">
+    <!-- LEFT: form -->
+    <div class="wizard-left">
+      <!-- Steps bar -->
+      <div class="steps-bar">
+        <div class="step-tab active" id="tab1" onclick="jumpTo(1)">
+          <div class="step-num">01</div>
+          <div class="step-name-label" data-i18n="s1">Nuotrauka</div>
+        </div>
+        <div class="step-tab" id="tab2" onclick="jumpTo(2)">
+          <div class="step-num">02</div>
+          <div class="step-name-label" data-i18n="s2">Dydis ir spalva</div>
+        </div>
+        <div class="step-tab" id="tab3" onclick="jumpTo(3)">
+          <div class="step-num">03</div>
+          <div class="step-name-label" data-i18n="s3">Jūsų duomenys</div>
+        </div>
+        <div class="step-tab" id="tab4" onclick="jumpTo(4)">
+          <div class="step-num">04</div>
+          <div class="step-name-label" data-i18n="s4">Patvirtinti</div>
+        </div>
+      </div>
+
+      <div class="wizard-form-box">
+        <!-- STEP 1: Photo -->
+        <div class="step-panel active" id="panel1">
+          <h3 data-i18n="s1_title">Įkelkite nuotrauką</h3>
+          <p class="step-sub" data-i18n="s1_sub">Ši nuotrauka bus pagrindas jūsų stygų meno kūriniui. Galite praleisti, jei norite tik aprašyti idėją.</p>
+          <div class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" accept="image/*" multiple/>
+            <span class="drop-icon">🖼️</span>
+            <p class="drop-title" data-i18n="drop_title">Tempkite nuotrauką čia arba paspauskite norėdami pasirinkti</p>
+            <p class="drop-sub" data-i18n="drop_sub">JPG, PNG, WEBP — iki 10 failų</p>
+          </div>
+          <div class="thumb-grid" id="thumbGrid"></div>
+          <div class="wiz-spacer"></div>
+          <div class="wizard-nav">
+            <button class="btn-wn" id="nextBtn1" onclick="goNext()" data-i18n="btn_next">Toliau</button>
+          </div>
+        </div>
+
+        <!-- STEP 2: Size & Color -->
+        <div class="step-panel" id="panel2">
+          <h3 data-i18n="s2_title">Dydis ir spalva</h3>
+          <p class="step-sub" data-i18n="s2_sub">Pasirinkite apvalios drobės dydį, siūlų ir vinių spalvas.</p>
+
+          <div class="selector-section">
+            <div class="selector-label" data-i18n="s2_size">PASIRINKITE DYDĮ</div>
+            <div class="size-grid">
+              <label class="size-card" for="sz20">
+                <input type="radio" name="size" id="sz20" value="20" onchange="updatePreview()"/>
+                <span class="size-main">Ø 20 cm</span>
+                <span class="size-desc-text" data-i18n="sz20d">Kompaktiškas</span>
+                <span class="size-price" data-i18n="price_req">KAINA DERINAMA</span>
+              </label>
+              <label class="size-card popular" for="sz30">
+                <span class="popular-badge" data-i18n="popular_badge">★ Populiariausias</span>
+                <input type="radio" name="size" id="sz30" value="30" checked onchange="updatePreview()"/>
+                <span class="size-main">Ø 30 cm</span>
+                <span class="size-desc-text" data-i18n="sz30d">Populiariausias</span>
+                <span class="size-price" data-i18n="price_req">KAINA DERINAMA</span>
+              </label>
+              <label class="size-card" for="sz40">
+                <input type="radio" name="size" id="sz40" value="40" onchange="updatePreview()"/>
+                <span class="size-main">Ø 40 cm</span>
+                <span class="size-desc-text" data-i18n="sz40d">Didelis</span>
+                <span class="size-price" data-i18n="price_req">KAINA DERINAMA</span>
+              </label>
+              <label class="size-card" for="sz50">
+                <input type="radio" name="size" id="sz50" value="50" onchange="updatePreview()"/>
+                <span class="size-main">Ø 50 cm</span>
+                <span class="size-desc-text" data-i18n="sz50d">Monumentalus</span>
+                <span class="size-price" data-i18n="price_req">KAINA DERINAMA</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="selector-section">
+            <div class="selector-label" data-i18n="s2_thread">SIŪLŲ SPALVA</div>
+            <div class="color-palette">
+              <label class="cp-opt" title="Juoda ir balta"><input type="radio" name="thread" id="th-bw" value="bw" checked onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:conic-gradient(#111 0deg 180deg,#eee 180deg)"></span></label>
+              <label class="cp-opt" title="Kreminė"><input type="radio" name="thread" id="th-cr" value="cr" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#f0ddb0"></span></label>
+              <label class="cp-opt" title="Auksas"><input type="radio" name="thread" id="th-gd" value="gd" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#d4a017"></span></label>
+              <label class="cp-opt" title="Sidabras"><input type="radio" name="thread" id="th-sv" value="sv" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#b8b8c8"></span></label>
+              <label class="cp-opt" title="Raudona"><input type="radio" name="thread" id="th-rd" value="rd" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#cc3333"></span></label>
+              <label class="cp-opt" title="Rožinė"><input type="radio" name="thread" id="th-pk" value="pk" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#e06080"></span></label>
+              <label class="cp-opt" title="Violetinė"><input type="radio" name="thread" id="th-vl" value="vl" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#7040a8"></span></label>
+              <label class="cp-opt" title="Tamsiai mėlyna"><input type="radio" name="thread" id="th-nv" value="nv" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#1a3a6b"></span></label>
+              <label class="cp-opt" title="Mėlyna"><input type="radio" name="thread" id="th-bl" value="bl" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#3070cc"></span></label>
+              <label class="cp-opt" title="Žalsvai mėlyna"><input type="radio" name="thread" id="th-tl" value="tl" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#288888"></span></label>
+              <label class="cp-opt" title="Žalia"><input type="radio" name="thread" id="th-gr" value="gr" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#388838"></span></label>
+              <label class="cp-opt" title="Smėlio"><input type="radio" name="thread" id="th-sd" value="sd" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#c8a870"></span></label>
+              <label class="cp-opt" title="Burgundy"><input type="radio" name="thread" id="th-bg" value="bg" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch" style="background:#782030"></span></label>
+              <label class="cp-opt" title="Individualus"><input type="radio" name="thread" id="th-cu" value="cu" onchange="updatePreview();toggleCustomColor()"/><span class="cp-swatch cp-custom-swatch">+</span></label>
+            </div>
+            <div class="custom-color-box" id="customColorBox">
+              <label class="custom-color-label" data-i18n="th_cu_label">Kokią spalvą norite?</label>
+              <input type="text" id="customColorInput" class="custom-color-input" data-i18n-ph="th_cu_ph" placeholder="pvz. tamsiai mėlyna, smėlio, burgundiška..."/>
+            </div>
+          </div>
+
+
+          <div class="wiz-spacer"></div>
+          <div class="wizard-nav">
+            <button class="btn-wp" onclick="goPrev()" data-i18n="btn_prev">Atgal</button>
+            <button class="btn-wn" onclick="goNext()" data-i18n="btn_next">Toliau</button>
+          </div>
+        </div>
+
+        <!-- STEP 3: Details -->
+        <div class="step-panel" id="panel3">
+          <h3 data-i18n="s3_title">Jūsų duomenys</h3>
+          <p class="step-sub" data-i18n="s3_sub">Įveskite kontaktinius duomenis — susisieksime dėl kainos ir terminų.</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="field-label" data-i18n="l_fname">Vardas</label>
+              <input type="text" id="fname" data-i18n-ph="ph_fname" placeholder="Jūsų vardas"/>
+            </div>
+            <div class="form-group">
+              <label class="field-label" data-i18n="l_lname">Pavardė</label>
+              <input type="text" id="lname" data-i18n-ph="ph_lname" placeholder="Jūsų pavardė"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group full">
+              <label class="field-label" data-i18n="l_email">El. paštas</label>
+              <input type="email" id="email" data-i18n-ph="ph_email" placeholder="jusu@pastas.lt"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group full">
+              <label class="field-label" data-i18n="l_msg">Papildoma informacija</label>
+              <textarea id="message" data-i18n-ph="ph_msg" placeholder="Aprašykite kūrinį, progą, spalvas…"></textarea>
+            </div>
+          </div>
+          <div class="wiz-spacer"></div>
+          <div class="wizard-nav">
+            <button class="btn-wp" onclick="goPrev()" data-i18n="btn_prev">Atgal</button>
+            <button class="btn-wn" onclick="goNext()" data-i18n="btn_next">Toliau</button>
+          </div>
+        </div>
+
+        <!-- STEP 4: Confirm -->
+        <div class="step-panel" id="panel4">
+          <h3 data-i18n="s4_title">Jūsų užsakymas</h3>
+          <p class="step-sub" data-i18n="s4_sub">Peržiūrėkite pasirinkimus ir išsiųskite užklausą.</p>
+          <table class="confirm-table" id="confirmTable">
+            <tr><td data-i18n="cf_size">Dydis</td><td id="cf-size">—</td></tr>
+            <tr><td data-i18n="cf_thread">Siūlai</td><td id="cf-thread">—</td></tr>
+            <tr><td data-i18n="cf_name">Vardas</td><td id="cf-name">—</td></tr>
+            <tr><td data-i18n="cf_email">El. paštas</td><td id="cf-email">—</td></tr>
+            <tr><td data-i18n="cf_photo">Nuotrauka</td><td id="cf-photo">—</td></tr>
+          </table>
+          <div class="wiz-spacer"></div>
+          <div class="wizard-nav">
+            <button class="btn-wp" onclick="goPrev()" data-i18n="btn_prev">Atgal</button>
+            <button class="btn-ws" onclick="submitOrder()" data-i18n="btn_submit">Siųsti užklausą ✦</button>
+          </div>
+          <p class="wiz-note" data-i18n="submit_note">Atsakysime per 24 valandas. Mokėjimo dabar nereikia — tik pokalbis.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Canvas preview -->
+    <div class="wizard-right">
+      <div class="preview-panel">
+        <span class="preview-label" data-i18n="prev_label">Peržiūra</span>
+        <div class="canvas-wrap" id="canvasWrap"></div>
+        <div class="preview-meta" id="previewMeta"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">STRINGAS</span>
+  <ul class="footer-links">
+    <li><a href="#about" data-i18n="nav_about">Apie mus</a></li>
+    <li><a href="#reviews" data-i18n="nav_reviews">Atsiliepimai</a></li>
+    <li><a href="#order" data-i18n="nav_cta">Užsakyti</a></li>
+  </ul>
+  <p data-i18n="footer_tag">Unikalūs stygų kūriniai — sukurti su meile, vienas vinys vienu metu.</p>
+  <p style="margin-top:18px;font-size:.76rem;opacity:.38">© 2026 Stringas. All rights reserved.</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── Translations ── */
+const T = {
+lt:{
+  nav_about:'Apie mus',nav_reviews:'Atsiliepimai',nav_cta:'Užsakyti',
+  hero_badge:'Sukurta su širdimi',hero_h1:'Kur siūlas tampa',hero_h1_em:'menu',
+  hero_desc:'Individualūs stygų meno kūriniai, sukurti su meile ir atsidavimu — portretai, peizažai, logotipai ir dar daugiau. Kiekvienas kūrinys pasakoja jūsų istoriją.',
+  hero_btn1:'Pradėti užsakymą',hero_btn2:'Atsiliepimai',
+  stat_pieces:'Sukurti darbai',stat_customers:'Patenkinti klientai',stat_made:'Sukurti su širdimi',stat_years:'Metai patirties',
+  about_label:'Štai mūsų pirmas kūrinys',about_title:'Aistra įausta į kiekvieną vinį ir siūlą',
+  about_desc:'Stringas gimė iš gilios meilės kūrybai ir stygų meno pasauliui. Tai, kas prasidėjo kaip hobis, greitai tapo pašaukimu — paverčiant prasmingas nuotraukas ir idėjas į amžinus sienų kūrinius.',
+  about_l2:'Naudojame aukštos kokybės apvalias drobes ir profesionalius siūlus.',
+  about_l3:'Kiekvienas užsakymas unikalus — nėra dviejų vienodų kūrinių.',
+  about_l4:'Glaudžiai bendradarbiaujame su jumis nuo idėjos iki rezultato.',
+  about_l5:'Siunčiame rūpestingai supakuotą, kad kūrinys atkeliautų tobulos būklės.',
+  about_cta:'Užsakyti kūrinį',about_pill:'Priimame užsakymus',
+  rev_label:'Atsiliepimai',rev_title:'Ką sako mūsų klientai',rev_desc:'Tikri žodžiai iš tikrų žmonių, kurių namuose kaba Stringas kūrinys.',
+  r1:'"Išsiunčiau savo senelės nuotrauką ir gavau patį jaudriausią kūrinį, kokį tik esu mačiusi. Siūlų detalumas yra neįtikėtinas. Verkiau jį atidariusi."',
+  r2:'"Užsisakiau mandalą savo svetainei. Tai pirmasis dalykas, kurį pastebi kiekvienas svečias. Amatininkystė yra aukščiausio lygio."',
+  r3:'"Vestuvinis portretas kaip pirmojo jubiliejaus dovana. Žmona liko be žodžių. Bendravimas viso proceso metu buvo fantastiškas."',
+  r4:'"Darbas atkeliavo tobulai supakuotas ir gyvenime atrodė dar geriau nei peržiūroje. Šilti tonai puikiai tiko mūsų miegamajam."',
+  r5:'"Jau užsisakiau du kartus. Antrasis darbas — logotipas biurui — tapo pokalbio tema per kiekvieną kliento susitikimą."',
+  r6:'"Padovanojau mamai portretą gimtadieniui. Ji paskambino su ašaromis — gerosiomis. Tai pagavo tai, ko net aš nepastebėjau nuotraukoje."',
+  rt1:'Portretų užsakymas',rt2:'Geometrinis dizainas',rt3:'Vestuvių dovana',rt4:'Individualus kūrinys',rt5:'Logotipo kūrinys',rt6:'Gimtadienio dovana',
+  order_label:'Pradėkite',order_title:'Sukurkite savo kūrinį',
+  order_desc:'Įkelkite nuotrauką, pasirinkite parametrus ir mes susisieksime su kainodaros bei terminų informacija.',
+  s1:'Nuotrauka',s2:'Dydis ir spalva',s3:'Jūsų duomenys',s4:'Patvirtinti',
+  s1_title:'Įkelkite nuotrauką',s1_sub:'Ši nuotrauka bus pagrindas jūsų stygų meno kūriniui. Galite praleisti, jei norite tik aprašyti idėją.',
+  drop_title:'Tempkite nuotrauką čia arba paspauskite norėdami pasirinkti',drop_sub:'JPG, PNG, WEBP — iki 10 failų',
+  s2_title:'Dydis ir spalva',s2_sub:'Pasirinkite apvalios drobės dydį, siūlų ir vinių spalvas.',
+  s2_size:'PASIRINKITE DYDĮ',s2_thread:'SIŪLŲ SPALVA',
+  sz20d:'Kompaktiškas',sz30d:'Populiariausias',sz40d:'Didelis',sz50d:'Monumentalus',
+  popular_badge:'★ Populiariausias',price_req:'KAINA DERINAMA',
+  th_bw:'Juoda ir balta',th_cu:'Individualus',th_cu_label:'Kokią spalvą norite?',th_cu_ph:'pvz. tamsiai mėlyna, smėlio, burgundiška...',
+  gen_btn:'Generuoti peržiūrą',gen_loading:'Generuojama…',gen_back:'← Grįžti prie nuotraukos',gen_hint:'Apytikslė stygų meno peržiūra',gen_nails:'Vinių skaičius',gen_threads:'Siūlų skaičius',gen_select:'Pirmiau pasirinkite parametrus',
+  tut_label:'PATARIMAI',tut_title:'Kaip išnaudoti savo kūrinį geriausiai',
+  tut_photo_title:'Kaip pasirinkti tobulą nuotrauką',
+  tut_p1_title:'Kontrastas',tut_p1_a:'Nuotrauka turi turėti aiškų kontrastą tarp šviesių ir tamsių plotų',tut_p1_b:'Geriausia, kai veidas ar objektas išsiskiria iš fono',tut_p1_c:'Venkite per daug išblukusių ar pereksponuotų nuotraukų',
+  tut_p2_title:'Vienas aiškus objektas',tut_p2_a:'Pasirinkite nuotrauką su vienu aiškiu veidu ar objektu',tut_p2_b:'Grupinės nuotraukos taip pat tinka, tačiau jos turi būti aiškios',tut_p2_c:'Objektas turėtų užimti bent 50–60 % kadro',
+  tut_p3_title:'Ryškumas',tut_p3_a:'Nuotrauka turi būti kuo ryškesnė, be judėjimo ar fokuso suliejimo',tut_p3_b:'Geresnė raiška – geresnis rezultatas',tut_p3_c:'Mobilių telefonų nuotraukos puikiai tinka, jei jos ryškios',
+  tut_p4_title:'Kampas ir poza',tut_p4_a:'Tiesioginė priekinė pozicija (en face) – ideali portretui',tut_p4_b:'3/4 kampas taip pat labai gerai tinka',tut_p4_c:'Venkite pernelyg šoninių pozų (profilio), nes jos sunkiau perteikiamos',
+  tut_p5_title:'Apšvietimas',tut_p5_a:'Natūrali šviesa – geriausia. Nuotraukos prie lango ar lauke puikiai tinka',tut_p5_b:'Venkite stiprių šešėlių ant veido ar ryškių blykstės atspindžių',tut_p5_c:'Švelnus, tolygus apšvietimas iš priekio ar šono – idealus variantas',
+  tut_hang_title:'Kur kabinti, kad geriausiai matytųsi',
+  tut_h1_title:'Šoninis apšvietimas',tut_h1_a:'Kabinkite ten, kur šviesa krenta iš šono, o ne tiesiai iš priekio',tut_h1_b:'Šoninis apšvietimas pabrėžia siūlų struktūrą ir kūriniui suteikia gylį',tut_h1_c:'Idealiai tinka reguliuojamos krypties šviestuvai (angl. spotlights)',
+  tut_h2_title:'Kontrastingas fonas',tut_h2_a:'Šviesi siena – ideali tamsiems siūlų kūriniams',tut_h2_b:'Jei kūrinys yra su šviesiomis spalvomis, rinkitės tamsesnį foną',tut_h2_c:'Venkite marių ar ryškių raštų sienų, kurios blaško dėmesį',
+  tut_h3_title:'Akių lygis',tut_h3_a:'Kūrinio centras turėtų būti maždaug akių lygyje (apie 145–160 cm nuo grindų)',tut_h3_b:'Taip žiūrovui nereikia nei žemyn, nei aukštyn žiūrėti – kūrinys matomas natūraliai',
+  tut_h4_title:'Atstumas nuo šviesos',tut_h4_a:'Tiesioginė saulės šviesa ilgainiui gali blukinti siūlus',tut_h4_b:'Rinkitės vietą su indirektiniu ar filtruotu natūraliu apšvietimu',tut_h4_c:'Dirbtinė šviesa (LED) yra puiki ir saugi alternatyva',
+  tut_h5_title:'Erdvė aplink',tut_h5_a:'Palikite bent 15–20 cm laisvos erdvės aplink kūrinį',tut_h5_b:'Tai leidžia kūriniui „kvėpuoti" ir išsiskirti iš aplinkos',tut_h5_c:'Per daug aplinkos elementų gali „paskandinti" net pačius geriausius darbus',
+  s3_title:'Jūsų duomenys',s3_sub:'Įveskite kontaktinius duomenis — susisieksime dėl kainos ir terminų.',
+  l_fname:'Vardas',l_lname:'Pavardė',l_email:'El. paštas',l_msg:'Papildoma informacija',
+  ph_fname:'Jūsų vardas',ph_lname:'Jūsų pavardė',ph_email:'jusu@pastas.lt',ph_msg:'Aprašykite kūrinį, progą, spalvas ar viską, kas padės mums suprasti jūsų norą…',
+  s4_title:'Jūsų užsakymas',s4_sub:'Peržiūrėkite pasirinkimus ir išsiųskite užklausą.',
+  cf_size:'Dydis',cf_thread:'Siūlai',cf_name:'Vardas',cf_email:'El. paštas',cf_photo:'Nuotrauka',
+  cf_yes:'Įkelta',cf_no:'Nepridėta',
+  btn_prev:'Atgal',btn_next:'Toliau',btn_submit:'Siųsti užklausą ✦',
+  submit_note:'Atsakysime per 24 valandas. Mokėjimo dabar nereikia — tik pokalbis.',
+  prev_label:'Peržiūra',
+  pm_size:'Dydis',pm_thread:'Siūlai',pm_photo:'Nuotrauka',
+  footer_tag:'Unikalūs stygų kūriniai — sukurti su meile, vienas vinys vienu metu.',
+  toast_msg:'✦ Užklausa išsiųsta! Susisieksime per 24 valandas.'
+},
+en:{
+  nav_about:'About',nav_reviews:'Reviews',nav_cta:'Start Order',
+  hero_badge:'Crafted with care',hero_h1:'Where thread becomes',hero_h1_em:'art',
+  hero_desc:'Custom string art pieces crafted with care — portraits, landscapes, logos, and more. Every piece tells your story.',
+  hero_btn1:'Start Your Order',hero_btn2:'Reviews',
+  stat_pieces:'Pieces created',stat_customers:'Happy customers',stat_made:'Made with care',stat_years:'Years of craft',
+  about_label:'Our First Piece',about_title:'Passion woven into every nail and thread',
+  about_desc:'Stringas was born from a deep love of creativity and the art of string weaving. What started as a personal hobby quickly became a calling — turning meaningful photos and ideas into timeless wall pieces.',
+  about_l2:'We work with premium round canvases and professional-grade threads.',
+  about_l3:'Each order is custom — no two pieces are ever the same.',
+  about_l4:'We collaborate closely with you from concept to completion.',
+  about_l5:'Shipping carefully packed so your piece arrives in perfect condition.',
+  about_cta:'Commission a piece',about_pill:'Accepting orders now',
+  rev_label:'Testimonials',rev_title:'What our customers say',rev_desc:'Real words from real people who now have a Stringas piece on their wall.',
+  r1:'"I sent a photo of my grandmother and received the most heartfelt piece I\'ve ever seen. The detail in the thread work is unbelievable. I cried when I opened it."',
+  r2:'"Ordered a mandala for our living room. It\'s now the first thing every guest mentions. The craftsmanship is on another level."',
+  r3:'"Got our wedding portrait as a first-anniversary gift. My wife was speechless. The communication throughout was fantastic."',
+  r4:'"The piece arrived perfectly packaged and looked even better in real life. The warm tones matched our bedroom perfectly."',
+  r5:'"I\'ve ordered twice now. The second piece — a logo for my office — has become a talking point in every client meeting."',
+  r6:'"Gifted a portrait to my mum for her birthday. She called me in tears — the good kind. It captured something I didn\'t notice myself."',
+  rt1:'Portrait commission',rt2:'Geometric design',rt3:'Wedding gift',rt4:'Custom piece',rt5:'Logo commission',rt6:'Birthday gift',
+  order_label:'Get Started',order_title:'Build your custom piece',
+  order_desc:'Upload a photo, choose your options, and we\'ll get back to you with a quote and timeline.',
+  s1:'Photo',s2:'Size & Color',s3:'Your details',s4:'Confirm',
+  s1_title:'Upload your photo',s1_sub:'This photo will be the inspiration for your string art piece. You can skip this and describe your idea instead.',
+  drop_title:'Drop your photos here, or click to browse',drop_sub:'JPG, PNG, WEBP — up to 10 files',
+  s2_title:'Size & Color',s2_sub:'Choose your round canvas size, thread color, and nail color.',
+  s2_size:'CHOOSE A SIZE',s2_thread:'THREAD COLOR',
+  sz20d:'Compact',sz30d:'Most popular',sz40d:'Large',sz50d:'Statement piece',
+  popular_badge:'★ Most popular',price_req:'PRICE ON REQUEST',
+  th_bw:'Black & White',th_cu:'Custom',th_cu_label:'What color would you like?',th_cu_ph:'e.g. navy blue, sand, burgundy...',
+  gen_btn:'Generate preview',gen_loading:'Generating…',gen_back:'← Back to photo',gen_hint:'Approximate string art preview',gen_nails:'Nail count',gen_threads:'Thread count',gen_select:'Select parameters first',
+  tut_label:'TIPS',tut_title:'How to get the most from your piece',
+  tut_photo_title:'How to choose the perfect photo',
+  tut_p1_title:'Contrast',tut_p1_a:'The photo should have clear contrast between light and dark areas',tut_p1_b:'Best when the face or subject stands out from the background',tut_p1_c:'Avoid washed-out or overexposed images',
+  tut_p2_title:'One clear subject',tut_p2_a:'Choose a photo with one clear face or subject',tut_p2_b:'Group photos work too, as long as they are clear',tut_p2_c:'The subject should fill at least 50–60% of the frame',
+  tut_p3_title:'Sharpness',tut_p3_a:'The photo should be as sharp as possible — no motion blur or focus issues',tut_p3_b:'Higher resolution means a better result',tut_p3_c:'Smartphone photos work great if they are in focus',
+  tut_p4_title:'Angle and pose',tut_p4_a:'A straight-on frontal pose (en face) is ideal for portraits',tut_p4_b:'A 3/4 angle also works very well',tut_p4_c:'Avoid very side-on profiles — they are harder to translate into string art',
+  tut_p5_title:'Lighting',tut_p5_a:'Natural light is best — photos near a window or outdoors work great',tut_p5_b:'Avoid harsh shadows on the face or bright flash reflections',tut_p5_c:'Soft, even front or side lighting is the ideal setup',
+  tut_hang_title:'Where to hang it for best effect',
+  tut_h1_title:'Side lighting',tut_h1_a:'Hang it where light comes from the side, not directly from the front',tut_h1_b:'Side lighting emphasises the texture of the strings and adds depth',tut_h1_c:'Adjustable spotlights work especially well',
+  tut_h2_title:'Contrasting background',tut_h2_a:'A light wall is ideal for dark thread pieces',tut_h2_b:'If the piece has light colors, choose a darker background',tut_h2_c:'Avoid busy or patterned walls that compete for attention',
+  tut_h3_title:'Eye level',tut_h3_a:'The centre of the piece should be roughly at eye level (around 145–160 cm from the floor)',tut_h3_b:'This way viewers see it naturally without looking up or down',
+  tut_h4_title:'Distance from light',tut_h4_a:'Direct sunlight can fade the threads over time',tut_h4_b:'Choose a spot with indirect or filtered natural light',tut_h4_c:'Artificial LED light is a great safe alternative',
+  tut_h5_title:'Space around it',tut_h5_a:'Leave at least 15–20 cm of clear space around the piece',tut_h5_b:'This lets the piece breathe and stand out from its surroundings',tut_h5_c:'Too many nearby objects can drown out even the finest work',
+  s3_title:'Your details',s3_sub:'Enter your contact info — we\'ll get in touch about pricing and timelines.',
+  l_fname:'First Name',l_lname:'Last Name',l_email:'Email',l_msg:'Additional information',
+  ph_fname:'Your first name',ph_lname:'Your last name',ph_email:'you@example.com',ph_msg:'Describe the piece, occasion, colours, or anything that helps us understand what you\'re after…',
+  s4_title:'Your order',s4_sub:'Review your choices and send the enquiry.',
+  cf_size:'Size',cf_thread:'Thread',cf_name:'Name',cf_email:'Email',cf_photo:'Photo',
+  cf_yes:'Uploaded',cf_no:'Not provided',
+  btn_prev:'Back',btn_next:'Next',btn_submit:'Send Enquiry ✦',
+  submit_note:'We reply within 24 hours. No payment needed yet — just a chat.',
+  prev_label:'Preview',
+  pm_size:'Size',pm_thread:'Thread',pm_photo:'Photo',
+  footer_tag:'Unique string art — made with love, one nail at a time.',
+  toast_msg:'✦ Enquiry sent! We\'ll be in touch within 24 hours.'
+}};
+
+let lang = 'lt';
+
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  const t = T[l];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.dataset.i18n;
+    if (t[k] !== undefined) el.textContent = t[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const k = el.dataset.i18nPh;
+    if (t[k] !== undefined) el.placeholder = t[k];
+  });
+  updatePreview();
+}
+
+/* ── Wizard state ── */
+let currentStep = 1;
+let uploadedFiles = [];
+let uploadedURLs = [];
+
+function goToStep(n) {
+  if (n < 1 || n > 4) return;
+  if (n === 4) buildConfirm();
+  document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('active', i + 1 === n));
+  document.querySelectorAll('.step-tab').forEach((t, i) => {
+    t.classList.remove('active', 'done');
+    if (i + 1 === n) t.classList.add('active');
+    else if (i + 1 < n) t.classList.add('done');
+  });
+  currentStep = n;
+  updatePreview();
+}
+
+function goNext() { goToStep(currentStep + 1); }
+function goPrev() { goToStep(currentStep - 1); }
+function jumpTo(n) { if (n < currentStep) goToStep(n); }
+
+/* ── Photo upload ── */
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const thumbGrid = document.getElementById('thumbGrid');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFiles([...e.dataTransfer.files]); });
+fileInput.addEventListener('change', () => handleFiles([...fileInput.files]));
+
+function handleFiles(files) {
+  files.filter(f => f.type.startsWith('image/')).slice(0, 10 - uploadedFiles.length).forEach(file => {
+    uploadedFiles.push(file);
+    const reader = new FileReader();
+    reader.onload = e => {
+      uploadedURLs.push(e.target.result);
+      const div = document.createElement('div');
+      div.className = 'p-thumb';
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      const btn = document.createElement('button');
+      btn.className = 'rm'; btn.textContent = '×';
+      const idx = uploadedURLs.length - 1;
+      btn.onclick = () => {
+        uploadedFiles.splice(idx, 1);
+        uploadedURLs.splice(idx, 1);
+        div.remove();
+        updatePreview();
+      };
+      div.appendChild(img); div.appendChild(btn);
+      thumbGrid.appendChild(div);
+      updatePreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ── Canvas preview ── */
+const NAIL_COLORS = { si:'#a8a8a8', go:'#d4af37', co:'#b87333', bl:'#1a1a1a' };
+const NAIL_NAMES = {
+  lt:{ si:'Sidabro', go:'Aukso', co:'Vario', bl:'Juoda' },
+  en:{ si:'Silver', go:'Gold', co:'Copper', bl:'Black' }
+};
+const THREAD_NAMES = {
+  lt:{ bw:'Juoda ir balta', cr:'Kreminė', gd:'Auksas', sv:'Sidabras', rd:'Raudona', pk:'Rožinė', vl:'Violetinė', nv:'Tamsiai mėlyna', bl:'Mėlyna', tl:'Žalsvai mėlyna', gr:'Žalia', sd:'Smėlio', bg:'Burgundy', cu:'Individualus' },
+  en:{ bw:'Black & White', cr:'Cream', gd:'Gold', sv:'Silver', rd:'Red', pk:'Rose', vl:'Violet', nv:'Navy', bl:'Blue', tl:'Teal', gr:'Green', sd:'Sand', bg:'Burgundy', cu:'Custom' }
+};
+const THREAD_COLORS = {
+  bw:'rgba(255,255,255,0.62)', cr:'rgba(240,210,155,0.65)', gd:'rgba(212,158,18,0.7)',
+  sv:'rgba(185,185,205,0.65)', rd:'rgba(210,48,48,0.7)',    pk:'rgba(224,88,125,0.7)',
+  vl:'rgba(112,58,168,0.7)',   nv:'rgba(28,52,130,0.7)',    bl:'rgba(46,108,210,0.7)',
+  tl:'rgba(36,136,136,0.7)',   gr:'rgba(48,140,48,0.7)',    sd:'rgba(196,162,100,0.7)',
+  bg:'rgba(118,30,46,0.7)',    cu:'rgba(255,255,255,0.62)'
+};
+const SIZE_NAMES = { '20':'Ø 20 cm', '30':'Ø 30 cm', '40':'Ø 40 cm', '50':'Ø 50 cm' };
+
+function buildEmptyCanvas() {
+  return `<svg viewBox="0 0 360 360" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="cvt" patternUnits="userSpaceOnUse" width="3" height="3">
+        <rect width="3" height="3" fill="#ede7d8"/>
+        <line x1="0" y1="1.5" x2="3" y2="1.5" stroke="#d0c8b4" stroke-width="0.7" opacity="0.45"/>
+        <line x1="1.5" y1="0" x2="1.5" y2="3" stroke="#d0c8b4" stroke-width="0.7" opacity="0.35"/>
+      </pattern>
+      <radialGradient id="vig" cx="50%" cy="46%" r="50%">
+        <stop offset="60%" stop-color="#ede7d8" stop-opacity="0"/>
+        <stop offset="100%" stop-color="#b0a890" stop-opacity="0.4"/>
+      </radialGradient>
+      <filter id="sf"><feDropShadow dx="0" dy="4" stdDeviation="10" flood-opacity="0.13"/></filter>
+    </defs>
+    <circle cx="180" cy="180" r="176" fill="url(#cvt)" filter="url(#sf)"/>
+    <circle cx="180" cy="180" r="176" fill="url(#vig)"/>
+    <circle cx="180" cy="180" r="176" fill="none" stroke="#c8c0aa" stroke-width="1.5"/>
+  </svg>`;
+}
+
+/* ── Crop UI ── */
+let cropDragging = false, cropSX = 0, cropSY = 0, cropOX = 0, cropOY = 0;
+let cropScale = 1, pinchStartDist = 0, pinchStartScale = 1;
+let cropPhotoEl = null, cropBoxEl = null;
+const MIN_SCALE = 0.7, MAX_SCALE = 3.5;
+let _savedOX = 0, _savedOY = 0, _savedScale = 1, _savedNails = null, _savedThreads = 5000;
+
+function showCropUI(imgSrc) {
+  const wrap = document.getElementById('canvasWrap');
+  const hintText = lang === 'lt'
+    ? 'Tempkite – kadravimas  ·  Ratukas / žnybkite – didinimas'
+    : 'Drag to reframe  ·  Scroll / pinch to zoom';
+  wrap.innerHTML = `
+    <div class="crop-box" id="cropBox">
+      <img class="crop-photo" id="cropPhoto" src="${imgSrc}" draggable="false"/>
+      <svg class="crop-svg-ov" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <mask id="dm"><rect width="400" height="400" fill="white"/><circle cx="200" cy="200" r="174" fill="black"/></mask>
+        </defs>
+        <rect width="400" height="400" fill="rgba(220,213,198,0.74)" mask="url(#dm)"/>
+        <circle cx="200" cy="200" r="174" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-dasharray="7 5"/>
+      </svg>
+    </div>
+    <p class="crop-hint" id="cropHint">${hintText}</p>
+    <div class="gen-params">
+      <div class="gen-param-row">
+        <span class="gen-param-label">${T[lang].gen_nails||'Vinių skaičius'}</span>
+        <div class="gen-param-opts">
+          <label class="gen-opt"><input type="radio" name="genNails" value="100" onchange="onGenParamChange()"><span>100</span></label>
+          <label class="gen-opt"><input type="radio" name="genNails" value="150" onchange="onGenParamChange()"><span>150</span></label>
+          <label class="gen-opt"><input type="radio" name="genNails" value="200" onchange="onGenParamChange()"><span>200</span></label>
+          <label class="gen-opt"><input type="radio" name="genNails" value="300" onchange="onGenParamChange()"><span>300</span></label>
+          <label class="gen-opt"><input type="radio" name="genNails" value="360" onchange="onGenParamChange()"><span>360</span></label>
+        </div>
+      </div>
+      <div class="gen-param-row">
+        <span class="gen-param-label">${T[lang].gen_threads||'Siūlų skaičius'} — <span id="threadsVal">5k</span></span>
+        <div class="gen-slider-wrap">
+          <input type="range" id="genThreads" name="genThreads" min="2000" max="8000" step="500" value="5000" oninput="onThreadSlider(this)">
+          <div class="gen-slider-ticks"><span>2k</span><span>4k</span><span>6k</span><span>8k</span></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-gen" id="genBtn" onclick="generatePreview()" disabled>${T[lang].gen_select||'Pirmiau pasirinkite parametrus'}</button>
+  `;
+  cropBoxEl = document.getElementById('cropBox');
+  cropPhotoEl = document.getElementById('cropPhoto');
+  cropOX = 0; cropOY = 0; cropScale = 1;
+  applyCropTransform();
+  cropBoxEl.addEventListener('mousedown', onCropDown);
+  cropBoxEl.addEventListener('wheel', onCropWheel, {passive: false});
+  cropBoxEl.addEventListener('touchstart', onCropTouchStart, {passive: true});
+  cropBoxEl.addEventListener('touchmove', onCropTouchMove, {passive: false});
+}
+
+function applyCropTransform() {
+  if (cropPhotoEl) cropPhotoEl.style.transform = `translate(${cropOX}px,${cropOY}px) scale(${cropScale})`;
+}
+
+function clampCrop() {
+  const max = 95 * cropScale;
+  cropOX = Math.max(-max, Math.min(max, cropOX));
+  cropOY = Math.max(-max, Math.min(max, cropOY));
+}
+
+function onCropWheel(e) {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.1 : 1 / 1.1;
+  cropScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, cropScale * factor));
+  clampCrop();
+  applyCropTransform();
+}
+
+function onCropTouchMove(e) {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    cropScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, pinchStartScale * dist / pinchStartDist));
+    clampCrop();
+    applyCropTransform();
+  } else if (e.touches.length === 1 && cropDragging) {
+    const max = 95 * cropScale;
+    cropOX = Math.max(-max, Math.min(max, e.touches[0].clientX - cropSX));
+    cropOY = Math.max(-max, Math.min(max, e.touches[0].clientY - cropSY));
+    applyCropTransform();
+  }
+}
+
+function onCropDown(e) {
+  cropDragging = true;
+  cropSX = e.clientX - cropOX;
+  cropSY = e.clientY - cropOY;
+  cropBoxEl.classList.add('dragging');
+  e.preventDefault();
+}
+
+function onCropTouchStart(e) {
+  if (e.touches.length === 2) {
+    cropDragging = false;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    pinchStartDist = Math.sqrt(dx * dx + dy * dy) || 1;
+    pinchStartScale = cropScale;
+  } else if (e.touches[0]) {
+    cropDragging = true;
+    cropSX = e.touches[0].clientX - cropOX;
+    cropSY = e.touches[0].clientY - cropOY;
+  }
+}
+
+document.addEventListener('mousemove', e => {
+  if (!cropDragging) return;
+  const max = 95 * cropScale;
+  cropOX = Math.max(-max, Math.min(max, e.clientX - cropSX));
+  cropOY = Math.max(-max, Math.min(max, e.clientY - cropSY));
+  applyCropTransform();
+});
+
+document.addEventListener('mouseup', () => {
+  if (cropDragging) { cropDragging = false; if (cropBoxEl) cropBoxEl.classList.remove('dragging'); }
+});
+document.addEventListener('touchend', () => { cropDragging = false; });
+
+function toggleCustomColor() {
+  const isCustom = document.querySelector('input[name="thread"]:checked')?.value === 'cu';
+  const box = document.getElementById('customColorBox');
+  if (box) box.classList.toggle('visible', isCustom);
+  if (isCustom) document.getElementById('customColorInput')?.focus();
+}
+
+function tutToggle(btn) {
+  const tip = btn.closest('.tut-tip');
+  const isOpen = tip.classList.contains('open');
+  tip.classList.toggle('open', !isOpen);
+}
+
+function onGenParamChange() {
+  const nails = document.querySelector('input[name="genNails"]:checked');
+  const btn = document.getElementById('genBtn');
+  if (!btn) return;
+  if (nails) {
+    btn.disabled = false;
+    btn.textContent = T[lang].gen_btn || 'Generuoti peržiūrą';
+  }
+}
+
+function onThreadSlider(el) {
+  const v = parseInt(el.value);
+  const label = document.getElementById('threadsVal');
+  if (label) label.textContent = (v/1000).toFixed(1).replace('.0','') + 'k';
+  el.style.setProperty('--pct', ((v-2000)/6000*100)+'%');
+}
+
+function restoreCropUI() {
+  showCropUI(uploadedURLs[0]);
+  // Restore crop pan/zoom
+  cropOX = _savedOX; cropOY = _savedOY; cropScale = _savedScale;
+  applyCropTransform();
+  // Restore nail radio
+  if (_savedNails) {
+    const r = document.querySelector(`input[name="genNails"][value="${_savedNails}"]`);
+    if (r) r.checked = true;
+  }
+  // Restore thread slider
+  const sl = document.getElementById('genThreads');
+  if (sl) { sl.value = _savedThreads; onThreadSlider(sl); }
+  // Re-enable generate button
+  onGenParamChange();
+}
+
+/* ── String-art photo preview ── */
+function getCroppedImageData(size) {
+  if (!cropBoxEl || !cropPhotoEl) return null;
+  const img = cropPhotoEl;
+  const boxSize = cropBoxEl.offsetWidth;
+  if (!boxSize || !img.naturalWidth) return null;
+  const naturalW = img.naturalWidth, naturalH = img.naturalHeight;
+  // .crop-photo: left=-30%, top=-30%, width=160%, height=160% of boxSize
+  // transform-origin = 50%/50% of element = center of box
+  const imgL_box = 0.5*boxSize + cropOX - 0.8*cropScale*boxSize;
+  const imgT_box = 0.5*boxSize + cropOY - 0.8*cropScale*boxSize;
+  const baseElemSize = 1.6 * boxSize;
+  const coverFactor = Math.max(baseElemSize / naturalW, baseElemSize / naturalH);
+  const offX = (baseElemSize - naturalW * coverFactor) / 2;
+  const offY = (baseElemSize - naturalH * coverFactor) / 2;
+  const pixL_box = imgL_box + offX * cropScale;
+  const pixT_box = imgT_box + offY * cropScale;
+  const pixW_box = naturalW * coverFactor * cropScale;
+  const pixH_box = naturalH * coverFactor * cropScale;
+  // Circle radius in box pixels = 174/400 * boxSize; map it to size/2
+  const sc = (size / 2) / (174 / 400 * boxSize);
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.beginPath(); ctx.arc(size/2, size/2, size/2, 0, Math.PI*2); ctx.clip();
+  ctx.drawImage(img, 0, 0, naturalW, naturalH,
+    size/2 + (pixL_box - boxSize/2)*sc, size/2 + (pixT_box - boxSize/2)*sc,
+    pixW_box*sc, pixH_box*sc);
+  return ctx.getImageData(0, 0, size, size);
+}
+
+/* ── Color String Art Generator (ported from reference) ── */
+
+const THREAD_RGB = {
+  bw:[20,15,10],    cr:[240,210,155], gd:[212,158,18],  sv:[185,185,205],
+  rd:[210,48,48],   pk:[224,88,125],  vl:[112,58,168],  nv:[28,52,130],
+  bl:[46,108,210],  tl:[36,136,136],  gr:[48,140,48],   sd:[196,162,100],
+  bg:[118,30,46],   cu:[255,255,255]
+};
+
+const THREADS = {
+  K:    {name:'K',    rgb:[0,0,0],       hex:'#000000'},
+  R:    {name:'R',    rgb:[225,29,72],   hex:'#e11d48'},
+  G:    {name:'G',    rgb:[22,163,74],   hex:'#16a34a'},
+  B:    {name:'B',    rgb:[37,99,235],   hex:'#2563eb'},
+  Y:    {name:'Y',    rgb:[250,204,21],  hex:'#facc15'},
+  K2:   {name:'K2',   rgb:[17,17,17],    hex:'#111111'},
+  WHITE:{name:'WHITE',rgb:[255,255,255], hex:'#ffffff'}
+};
+
+const _lc = new Map();
+
+function _lum(r,g,b){ return 0.299*r+0.587*g+0.114*b; }
+
+function _linePixels(ai, bi, pins, rw, rh) {
+  const key = ai<bi ? `${ai}-${bi}-${rw}` : `${bi}-${ai}-${rw}`;
+  if (_lc.has(key)) return _lc.get(key);
+  if (_lc.size > 60000) _lc.clear();
+  let x0=Math.round(pins[ai].x/rw*rw), y0=Math.round(pins[ai].y/rw*rh);
+  let x1=Math.round(pins[bi].x/rw*rw), y1=Math.round(pins[bi].y/rw*rh);
+  const pts=[], dx=Math.abs(x1-x0), dy=Math.abs(y1-y0), sx=x0<x1?1:-1, sy=y0<y1?1:-1;
+  let err=dx-dy;
+  for(;;){
+    if(x0>=0&&x0<rw&&y0>=0&&y0<rh) pts.push(y0*rw+x0);
+    if(x0===x1&&y0===y1) break;
+    const e2=2*err;
+    if(e2>-dy){err-=dy;x0+=sx;}
+    if(e2<dx){err+=dx;y0+=sy;}
+  }
+  _lc.set(key, pts);
+  return pts;
+}
+
+function _whiteW(target, work, p){
+  const i=p*3;
+  const tl=_lum(target[i],target[i+1],target[i+2]);
+  const wl=_lum(work[i],work[i+1],work[i+2]);
+  if(tl<160) return 0.15;
+  if(tl>wl+12) return 1.35;
+  return 0.55;
+}
+
+function _darkW(target, work, p){
+  const i=p*3;
+  const tl=_lum(target[i],target[i+1],target[i+2]);
+  const wl=_lum(work[i],work[i+1],work[i+2]);
+  return tl<wl-8 ? 1.25 : 0.55;
+}
+
+function _scoreLine(ai, bi, thread, pins, prepared, amt){
+  const pts=_linePixels(ai, bi, pins, prepared.rw, prepared.rh);
+  const {target,work,mask}=prepared;
+  const [cr,cg,cb]=thread.rgb;
+  let gain=0, seen=0;
+  for(const p of pts){
+    if(!mask[p]) continue;
+    const i=p*3;
+    const wr=work[i],wg=work[i+1],wb=work[i+2];
+    const tr=target[i],tg=target[i+1],tb=target[i+2];
+    const e0=(tr-wr)*(tr-wr)+(tg-wg)*(tg-wg)+(tb-wb)*(tb-wb);
+    const nr=wr*(1-amt)+cr*amt, ng=wg*(1-amt)+cg*amt, nb=wb*(1-amt)+cb*amt;
+    let imp=e0-((tr-nr)*(tr-nr)+(tg-ng)*(tg-ng)+(tb-nb)*(tb-nb));
+    if(thread.name==='WHITE') imp*=_whiteW(target,work,p);
+    if(thread.name==='K'||thread.name==='K2') imp*=_darkW(target,work,p);
+    gain+=imp; seen++;
+  }
+  return seen ? gain/seen : -Infinity;
+}
+
+function _applyLine(ai, bi, thread, pins, prepared, amt){
+  const pts=_linePixels(ai, bi, pins, prepared.rw, prepared.rh);
+  const {work,mask}=prepared;
+  const [cr,cg,cb]=thread.rgb, a1=1-amt;
+  for(const p of pts){
+    if(!mask[p]) continue;
+    const i=p*3;
+    work[i]=work[i]*a1+cr*amt; work[i+1]=work[i+1]*a1+cg*amt; work[i+2]=work[i+2]*a1+cb*amt;
+  }
+}
+
+function _circDist(a,b,n){ const d=Math.abs(a-b); return Math.min(d,n-d); }
+
+function _getCandidates(cur, n, minSkip){
+  const count=200, out=new Set(), half=Math.floor(n/2);
+  let guard=0;
+  while(out.size<Math.min(count,n-1)&&guard<count*24){
+    guard++;
+    const spread=Math.floor(n*(0.10+Math.random()*0.40));
+    const to=((cur+half+Math.floor((Math.random()*2-1)*spread))%n+n)%n;
+    if(to!==cur&&_circDist(to,cur,n)>=minSkip) out.add(to);
+  }
+  if(!out.size){ for(let i=0;i<n;i++) if(i!==cur) out.add(i); }
+  return [...out];
+}
+
+function _buildPasses(total, threadVal){
+  const isBW = threadVal==='bw';
+  // mono mode for single-colour selections
+  const rgb = isBW ? [20,15,10] : (THREAD_RGB[threadVal]||[255,255,255]);
+  const monoThread = {name:'MONO', rgb, hex:'#000'};
+  return [{thread: monoThread, count: total, isMono: true}];
+}
+
+async function generatePreview() {
+  const wrap=document.getElementById('canvasWrap');
+  const genBtn=document.getElementById('genBtn');
+  const t=T[lang];
+  if(!cropBoxEl||!cropPhotoEl) return;
+  if(genBtn){genBtn.disabled=true;genBtn.textContent=t.gen_loading||'Generuojama…';}
+
+  const NAILS=parseInt(document.querySelector('input[name="genNails"]:checked')?.value||'200');
+  const LINES=parseInt(document.getElementById('genThreads')?.value||'5000');
+  const threadVal=document.querySelector('input[name="thread"]:checked')?.value||'bw';
+  const isBW=threadVal==='bw';
+  const [bgR,bgG,bgB]=isBW?[240,234,214]:[18,6,0];
+  const bgHex=isBW?'#F0EAD6':'#120600';
+
+  const ALG=240, OUT=520;
+  const imgData=getCroppedImageData(ALG);
+  if(!imgData){if(genBtn){genBtn.disabled=false;genBtn.textContent=t.gen_btn||'Generuoti';}return;}
+
+  // Prepare target / work / mask (white canvas = reference default for bw, dark for colour)
+  const N=ALG*ALG, raw=imgData.data;
+  const target=new Float32Array(N*3), work=new Float32Array(N*3), mask=new Uint8Array(N);
+  for(let j=0;j<N;j++){
+    target[j*3]=raw[j*4]; target[j*3+1]=raw[j*4+1]; target[j*3+2]=raw[j*4+2];
+    work[j*3]=bgR; work[j*3+1]=bgG; work[j*3+2]=bgB;
+    mask[j]=raw[j*4+3]>64?1:0;
+  }
+  _lc.clear();
+  const prepared={target,work,mask,rw:ALG,rh:ALG};
+
+  // Nails around circle (reference: starts at top, -π/2)
+  const cx=ALG/2, cy=ALG/2, rad=ALG*0.485;
+  const pins=Array.from({length:NAILS},(_,k)=>{
+    const a=Math.PI*2*k/NAILS-Math.PI/2;
+    return{x:cx+Math.cos(a)*rad, y:cy+Math.sin(a)*rad};
+  });
+
+  // Save crop & param state for back button
+  _savedOX=cropOX; _savedOY=cropOY; _savedScale=cropScale;
+  _savedNails=document.querySelector('input[name="genNails"]:checked')?.value||null;
+  _savedThreads=parseInt(document.getElementById('genThreads')?.value||'5000');
+
+  // Output canvas
+  const outCanvas=document.createElement('canvas');
+  outCanvas.width=OUT; outCanvas.height=OUT;
+  const ctx=outCanvas.getContext('2d');
+  const sc=OUT/ALG;
+  ctx.fillStyle=bgHex; ctx.fillRect(0,0,OUT,OUT);
+  ctx.save();
+  ctx.beginPath(); ctx.arc(OUT/2,OUT/2,OUT/2-2,0,Math.PI*2); ctx.clip();
+  ctx.lineCap='round';
+
+  wrap.innerHTML='';
+  const div=document.createElement('div'); div.className='str-result-wrap';
+  const clipEl=document.createElement('div'); clipEl.className='str-canvas-clip';
+  clipEl.appendChild(outCanvas);
+  const hint=document.createElement('p'); hint.className='crop-hint';
+  hint.id='genHint'; hint.textContent='0 / '+LINES;
+  const back=document.createElement('button');
+  back.className='btn-gen btn-gen-back';
+  back.textContent=t.gen_back||'← Grįžti prie nuotraukos';
+  back.onclick=()=>restoreCropUI();
+  div.appendChild(clipEl); div.appendChild(hint); div.appendChild(back);
+  wrap.appendChild(div);
+
+  // Multi-pass generation loop (ported from Color String Art Generator)
+  const passes=_buildPasses(LINES, threadVal);
+  const baseAmt=0.075;
+  const minSkip=Math.max(8,Math.floor(NAILS*0.10));
+  const recentLim=Math.max(20,Math.floor(NAILS*0.22));
+  let globalLine=0;
+
+  for(let pi=0;pi<passes.length;pi++){
+    const {thread,count}=passes[pi];
+    const [rr,gg,bb]=thread.rgb;
+    let amt=baseAmt;
+    if(thread.name==='WHITE') amt*=0.5;
+    if(thread.name==='K2')    amt*=0.7;
+    if(thread.name==='Y')     amt*=0.78;
+
+    // render opacity & thickness matching reference
+    let op=0.22, lw=0.5;
+    if(thread.name==='WHITE'){op*=0.9; lw=0.4;}
+    if(thread.name==='K2')   op=Math.min(0.34,op*1.15);
+    ctx.strokeStyle=`rgba(${rr},${gg},${bb},${op})`;
+    ctx.lineWidth=lw;
+
+    let cur=Math.floor((NAILS/passes.length)*pi)%NAILS;
+    const recent=[];
+
+    for(let loc=0;loc<count;loc++){
+      const candidates=_getCandidates(cur,NAILS,minSkip);
+      let bestTo=-1, bestScore=0.05;
+
+      for(const to of candidates){
+        const key=cur<to?`${thread.name}-${cur}-${to}`:`${thread.name}-${to}-${cur}`;
+        if(recent.includes(key)) continue;
+        const s=_scoreLine(cur,to,thread,pins,prepared,amt);
+        if(s>bestScore){bestScore=s;bestTo=to;}
+      }
+      if(bestTo<0) break;
+
+      const key=cur<bestTo?`${thread.name}-${cur}-${bestTo}`:`${thread.name}-${bestTo}-${cur}`;
+      _applyLine(cur,bestTo,thread,pins,prepared,amt);
+
+      ctx.beginPath();
+      ctx.moveTo(pins[cur].x*sc, pins[cur].y*sc);
+      ctx.lineTo(pins[bestTo].x*sc, pins[bestTo].y*sc);
+      ctx.stroke();
+
+      recent.push(key);
+      while(recent.length>recentLim) recent.shift();
+      cur=bestTo; globalLine++;
+
+      if((globalLine&15)===0){
+        const h=document.getElementById('genHint');
+        if(h) h.textContent=globalLine+' / '+LINES;
+        if((globalLine&63)===0) await new Promise(r=>requestAnimationFrame(r));
+      }
+    }
+  }
+  ctx.restore();
+
+  // Pin dots
+  const [rr,gg,bb]=passes[0].thread.rgb;
+  ctx.fillStyle=`rgba(${rr},${gg},${bb},0.45)`;
+  for(const{x,y}of pins){ctx.beginPath();ctx.arc(x*sc,y*sc,1.3,0,Math.PI*2);ctx.fill();}
+
+  const h=document.getElementById('genHint');
+  if(h) h.textContent=t.gen_hint||'Apytikslė stygų meno peržiūra';
+  if(genBtn){genBtn.disabled=false;genBtn.textContent=t.gen_btn||'Generuoti peržiūrą';}
+}
+
+function updatePreview() {
+  const threadKey = document.querySelector('input[name="thread"]:checked')?.value || 'bw';
+  const sizeVal   = document.querySelector('input[name="size"]:checked')?.value   || '30';
+  const imgSrc    = uploadedURLs[0] || null;
+  const wrap      = document.getElementById('canvasWrap');
+
+  if (!imgSrc) {
+    wrap.innerHTML = buildEmptyCanvas();
+    cropBoxEl = null; cropPhotoEl = null;
+  } else if (!document.getElementById('cropBox')) {
+    showCropUI(imgSrc);
+  } else {
+    /* Crop UI already live — only update hint text if language changed */
+    const hint = document.getElementById('cropHint');
+    if (hint) hint.textContent = lang === 'lt'
+      ? 'Tempkite – kadravimas  ·  Ratukas / žnybkite – didinimas'
+      : 'Drag to reframe  ·  Scroll / pinch to zoom';
+  }
+
+  const t = T[lang];
+  const photoVal = imgSrc
+    ? `<span style="color:#5a9c58;font-size:.82rem">✓ ${t.cf_yes||'Įkelta'}</span>`
+    : `<span style="color:var(--light)">${t.cf_no||'Nepridėta'}</span>`;
+
+  const metaEl = document.getElementById('previewMeta');
+  if (currentStep === 1) {
+    metaEl.innerHTML = `<div class="pm-row"><span class="pm-key">${t.pm_photo||'Nuotrauka'}</span><span class="pm-val">${photoVal}</span></div>`;
+  } else {
+    metaEl.innerHTML = `
+      <div class="pm-row"><span class="pm-key">${t.pm_size||'Dydis'}</span><span class="pm-val">Ø ${sizeVal} cm</span></div>
+      <div class="pm-row"><span class="pm-key">${t.pm_thread||'Siūlai'}</span><span class="pm-val">${THREAD_NAMES[lang][threadKey]||threadKey}</span></div>
+      <div class="pm-row"><span class="pm-key">${t.pm_photo||'Nuotrauka'}</span><span class="pm-val">${photoVal}</span></div>
+    `;
+  }
+}
+
+function buildConfirm() {
+  const t = T[lang];
+  const threadKey = document.querySelector('input[name="thread"]:checked')?.value || 'bw';
+  const sizeVal   = document.querySelector('input[name="size"]:checked')?.value   || '30';
+  const imgSrc    = uploadedURLs[0] || null;
+  const fname = document.getElementById('fname').value.trim();
+  const lname = document.getElementById('lname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  document.getElementById('cf-size').textContent   = `Ø ${sizeVal} cm`;
+  document.getElementById('cf-thread').textContent = THREAD_NAMES[lang][threadKey];
+  document.getElementById('cf-name').textContent   = (fname+' '+lname).trim() || '—';
+  document.getElementById('cf-email').textContent  = email || '—';
+  const cfPhoto = document.getElementById('cf-photo');
+  if (imgSrc) {
+    cfPhoto.innerHTML = `<span class="photo-thumb-sm"><img src="${imgSrc}"/></span>${t.cf_yes}`;
+  } else {
+    cfPhoto.textContent = t.cf_no;
+  }
+}
+
+function submitOrder() {
+  const toast = document.getElementById('toast');
+  toast.textContent = T[lang].toast_msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 4000);
+  document.getElementById('fname').value = '';
+  document.getElementById('lname').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('message').value = '';
+  uploadedFiles = []; uploadedURLs = [];
+  document.getElementById('thumbGrid').innerHTML = '';
+  goToStep(1);
+}
+
+/* ── Nav scroll ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', scrollY > 20);
+});
+
+/* ── Reveal on scroll ── */
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold:.12 });
+document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+/* ── Count-up ── */
+function countUp(el, target, dur=1600) {
+  let start = null;
+  const step = ts => {
+    if (!start) start = ts;
+    const p = Math.min((ts-start)/dur, 1);
+    const e = 1 - Math.pow(1-p, 3);
+    el.textContent = Math.floor(e*target) + (target===98?'%':'+');
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target + (target===98?'%':'+');
+  };
+  requestAnimationFrame(step);
+}
+const cntObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      countUp(e.target, parseInt(e.target.dataset.target));
+      cntObs.unobserve(e.target);
+    }
+  });
+}, { threshold:.5 });
+document.querySelectorAll('.stat-number[data-target]').forEach(el => cntObs.observe(el));
+
+/* ── Init ── */
+updatePreview();
+</script>
+</body>
+</html>
